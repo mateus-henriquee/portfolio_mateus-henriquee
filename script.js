@@ -40,6 +40,51 @@ if (dropdownMenu) {
 }
 
 // ==========================================
+// ANIMAÇÃO DA TRILHA PROFISSIONAL (TIMELINE)
+// ==========================================
+function updateTimelineProgress() {
+    const timelineWrapper = document.querySelector('.timeline-wrapper');
+    const progressLine = document.querySelector('.timeline-progress-line');
+    const timelineItems = document.querySelectorAll('.timeline-item');
+    
+    if (!timelineWrapper || !progressLine) return;
+
+    const wrapperRect = timelineWrapper.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+
+    // Calcula o quanto da timeline passou do meio da tela do usuário
+    const triggerPoint = windowHeight / 2;
+    const totalHeight = wrapperRect.height;
+    const currentProgress = triggerPoint - wrapperRect.top;
+
+    // Converte em porcentagem limite (0% a 100%)
+    let progressPercent = (currentProgress / totalHeight) * 100;
+    progressPercent = Math.max(0, Math.min(100, progressPercent));
+
+    // Aplica a altura na linha roxa
+    progressLine.style.height = `${progressPercent}%`;
+
+    // Ativa os pontos (dots) conforme a linha passa por eles
+    timelineItems.forEach(item => {
+        const dot = item.querySelector('.timeline-dot');
+        if (dot) {
+            const dotTopWithRespectToWindow = dot.getBoundingClientRect().top;
+            if (dotTopWithRespectToWindow < triggerPoint) {
+                item.classList.add('active');
+            } else {
+                item.classList.remove('active');
+            }
+        }
+    });
+}
+
+// Conecta o efeito ao evento de scroll que você já possui na página
+window.addEventListener('scroll', updateTimelineProgress);
+window.addEventListener('resize', updateTimelineProgress);
+// Roda uma vez no início para checar o posicionamento atual
+document.addEventListener('DOMContentLoaded', updateTimelineProgress);
+
+// ==========================================
 // 3. Fetch & Render - GitHub
 // ==========================================
 async function fetchGithub() {
@@ -171,6 +216,111 @@ function renderCursos(limit = 6) {
 }
 
 // ==========================================
+// CONFIGURAÇÃO DO EMAILJS (Envio Real)
+// ==========================================
+// Substitua pelo seu Public Key obtido no painel do EmailJS
+emailjs.init("pf3zrh5Hl2rNkmjEJ"); 
+
+const contactForm = document.getElementById('contact-form');
+const btnEnviar = document.getElementById('btn-enviar');
+
+if (contactForm) {
+    contactForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        
+        if (btnEnviar) {
+            btnEnviar.innerText = "Enviando...";
+            btnEnviar.disabled = true;
+        }
+
+        // Envia o formulário real usando os dados dos inputs (através do atributo 'name')
+        emailjs.sendForm('service_mhljs', 'template_mhljs', this) 
+    .then(() => {
+        // Seleciona os elementos da notificação
+        const toast = document.getElementById('toast-notification');
+        
+        if (toast) {
+            // Exibe a notificação (faz ela descer)
+            toast.classList.add('show');
+            
+            // Remove a notificação (faz ela subir de volta) após 3 segundos (3000ms)
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // Limpa o formulário e restaura o botão
+        contactForm.reset();
+        if (btnEnviar) btnEnviar.innerText = "Enviar Mensagem";
+    }, (error) => {
+        alert('Ocorreu um erro ao enviar a mensagem. Por favor, tente novamente.');
+        console.error('Erro EmailJS:', error);
+        if (btnEnviar) btnEnviar.innerText = "Enviar Mensagem";
+    })
+    .finally(() => {
+        if (btnEnviar) btnEnviar.disabled = false;
+    });
+    });
+}
+
+// ==========================================
+// MÁSCARA DE TELEFONE (xx) xxxxx-xxxx
+// ==========================================
+const inputTelefone = document.getElementById('telefone');
+
+if (inputTelefone) {
+    inputTelefone.addEventListener('input', (e) => {
+        let value = e.target.value;
+        
+        // Remove tudo o que não for número
+        value = value.replace(/\D/g, "");
+        
+        // Aplica a máscara progressivamente
+        if (value.length > 0) {
+            value = `(${value}`;
+        }
+        if (value.length > 3) {
+            value = `${value.slice(0, 3)}) ${value.slice(3)}`;
+        }
+        if (value.length > 10) {
+            value = `${value.slice(0, 10)}-${value.slice(10, 14)}`;
+        }
+        
+        e.target.value = value;
+    });
+}
+
+// ==========================================
+// SUGESTÕES DE DOMÍNIO DE E-MAIL
+// ==========================================
+const inputEmail = document.getElementById('email');
+const datalistEmail = document.getElementById('email-suggestions');
+const dominios = ['gmail.com', 'outlook.com', 'yahoo.com', 'hotmail.com', 'com.br'];
+
+if (inputEmail && datalistEmail) {
+    inputEmail.addEventListener('input', (e) => {
+        const valor = e.target.value;
+        datalistEmail.innerHTML = ''; // Limpa as sugestões anteriores
+
+        // Se o usuário digitou o caractere '@'
+        if (valor.includes('@')) {
+            const partes = valor.split('@');
+            const usuario = partes[0]; // Tudo antes do @
+            const dominioDigitado = partes[1]; // Tudo depois do @
+
+            dominios.forEach(dom => {
+                // Filtra para mostrar apenas domínios que combinem com o que ele começou a digitar após o @
+                if (dom.startsWith(dominioDigitado)) {
+                    const option = document.createElement('option');
+                    option.value = `${usuario}@${dom}`;
+                    datalistEmail.appendChild(option);
+                }
+            });
+        }
+    });
+}
+
+// ==========================================
 // 5. Fechamento Global dos Menus & Inicializadores
 // ==========================================
 document.addEventListener('click', () => {
@@ -181,3 +331,4 @@ document.addEventListener('click', () => {
 // Execuções Iniciais
 fetchGithub();
 renderCursos(6); // Inicializa mostrando 6
+

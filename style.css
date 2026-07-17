@@ -91,6 +91,14 @@ nav {
     object-fit: cover;
 }
 
+.profile-img-container img:hover {
+    background-color: #100d17;
+    animation: 0.3s ease-in-out;
+    transition: 0.3s ease-in-out;
+    transform: translateY(-5px);
+    box-shadow: 0 0 10px rgba(154, 47, 255, 0.849);
+}
+
 .profile-info h1 {
     font-size: 2.5rem;
     margin-bottom: 10px;
@@ -211,6 +219,162 @@ a {
     line-height: 1.6;
 }
 
+/* ==========================================
+   TRILHA PROFISSIONAL (TIMELINE)
+   ========================================== */
+.timeline-wrapper {
+    position: relative;
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 40px 0;
+}
+
+/* A linha cinza de fundo (fina) */
+.timeline-wrapper::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 4px;
+    height: 100%;
+    background-color: #30363d;
+    transform: translateX(-50%);
+    border-radius: 2px;
+}
+
+/* A linha roxa que preenche com o scroll */
+.timeline-progress-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 4px;
+    height: 0%; /* Controlado pelo JavaScript */
+    background: linear-gradient(to bottom, #a855f7, #6366f1);
+    transform: translateX(-50%);
+    border-radius: 2px;
+    z-index: 1;
+    transition: height 0.1s ease-out;
+}
+
+/* Container do item (linha inteira) */
+.timeline-item {
+    position: relative;
+    width: 100%;
+    margin-bottom: 60px;
+    display: flex;
+    justify-content: flex-start; /* Ímpares (1º, 3º...) ficam na esquerda */
+}
+
+/* Pares (2º, 4º...) vão para a direita automaticamente */
+.timeline-item:nth-child(even) {
+    justify-content: flex-end;
+}
+
+/* O Quadrado Central na linha */
+.timeline-dot {
+    position: absolute;
+    left: 50%;
+    top: 30px;
+    width: 16px;
+    height: 16px;
+    background-color: #0d1117;
+    border: 3px solid #30363d;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    transition: border-color 0.3s ease, background-color 0.3s ease;
+}
+
+/* Quando a linha passar pelo ponto, ele "acende" */
+.timeline-item.active .timeline-dot {
+    border-color: #a855f7;
+    background-color: #a855f7;
+    box-shadow: 0 0 10px rgba(168, 85, 247, 0.5);
+}
+
+/* O Bloco de Conteúdo (Card) */
+.timeline-content {
+    width: 45%;
+    background-color: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 25px;
+    position: relative;
+    transition: border-color 0.3s ease;
+}
+
+.timeline-content, p, h3 {
+    cursor: default;
+}
+
+.timeline-content:hover {
+    background-color: #100d17;
+    animation: 0.3s ease-in-out;
+    transition: 0.3s ease-in-out;
+    transform: translateY(-5px);
+    box-shadow: 0 0 10px rgba(154, 47, 255, 0.849);
+}
+
+.timeline-item.active .timeline-content {
+    border-color: rgba(168, 85, 247, 0.4);
+}
+
+/* Elementos de Texto internos */
+.job-title {
+    color: #ffffff;
+    font-size: 1.25rem;
+    margin-bottom: 5px;
+}
+
+.job-date {
+    color: #a855f7;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: inline-block;
+    margin-bottom: 15px;
+}
+
+.job-description {
+    color: #8b949e;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+.job-topics {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.job-topics li {
+    color: #c9d1d9;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Responsividade para Celulares (coloca tudo em uma coluna só) */
+@media (max-width: 768px) {
+    .timeline-wrapper::before, .timeline-progress-line {
+        left: 20px;
+        transform: none;
+    }
+    .timeline-dot {
+        left: 20px;
+        transform: translate(-50%, -50%);
+    }
+    .timeline-item, .timeline-item:nth-child(even) {
+        justify-content: flex-end;
+    }
+    .timeline-content {
+        width: calc(100% - 50px);
+    }
+}
+
 /* --- GITHUB & CURSOS GRID --- */
 .repos-grid {
     display: grid;
@@ -272,7 +436,7 @@ a {
     background-color: rgba(120, 37, 197, 0.144);
     color: #b067f5;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    transform: translateY(-10px); 
+    transform: translateY(-2px); 
     box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.2);
     cursor: default;
 }
@@ -286,53 +450,177 @@ a {
 .dropdown-content button { background: none; border: none; color: white; padding: 10px 20px; width: 100%; text-align: left; cursor: pointer; }
 .dropdown-content button:hover { background: var(--accent-purple); }
 
-/* --- CONTACT FORM --- */
-.contact-form-container {
-    max-width: 600px;
-    margin: 0 auto;
+/* ==========================================
+   SEÇÃO DE CONTATO - CORREÇÃO DE LARGURA
+   ========================================== */
+#contato {
+    padding: 80px 20px;
+    background-color: #000000; 
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 #contact-form {
+    width: 100%;
+    /* Aumentamos consideravelmente a largura máxima para ele expandir na tela */
+    max-width: 900px; 
+    background: #0d1117; 
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 40px; 
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 25px; 
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-#contact-form input, 
-#contact-form textarea {
-    background-color: var(--card-bg);
-    border: 1.5px solid var(--accent-purple);
-    border-radius: 6px;
-    padding: 12px;
-    color: white;
-    font-family: inherit;
-}
-
-textarea {
-    resize: vertical; 
-    
-    /* DICA EXTRA: Defina limites para o usuário não esticar o campo infinitamente */
-    min-height: 100px; /* Altura mínima inicial */
-    max-height: 200px; /* Altura máxima permitida */
-}
-
-.file-input-wrapper {
-    padding: 10px;
-    border-radius: 6px;
+.input-group {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    gap: 10px;
+    text-align: left;
+    width: 100%; /* Força o grupo a ocupar toda a largura interna */
+    box-sizing: border-box;
 }
 
-.btn-send {
-    background-color: var(--accent-purple);
-    color: white;
-    border: none;
-    padding: 15px;
+.input-group label {
+    color: #c9d1d9;
+    font-size: 1rem; 
+    font-weight: 500;
+}
+
+/* INPUTS E TEXTAREA EXPANDIDOS */
+.input-group input,
+.input-group textarea {
+    width: 50em; /* Ocupa 100% do formulário que agora está maior */
+    box-sizing: border-box; /* Garante que o padding não quebre a largura */
+    padding: 16px 20px; 
+    background-color: #010409; 
+    border: 1px solid #30363d;
     border-radius: 6px;
-    font-weight: bold;
+    color: #ffffff;
+    font-size: 1.05rem; 
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* Área de mensagem maior */
+.input-group textarea {
+    min-height: 180px; 
+    resize: vertical;
+}
+
+/* Foco Interativo */
+.input-group input:focus,
+.input-group textarea:focus {
+    border-color: #a855f7; 
+    box-shadow: 0 0 0 2px rgba(168, 85, 247, 0.2); 
+}
+
+.input-group input::placeholder,
+.input-group textarea::placeholder {
+    color: #484f58;
+}
+
+/* BOTÃO DE ENVIAR */
+#btn-enviar {
+    background-color: #832fd1; 
+    color: #ffffff;
+    border: none;
+    border-radius: 6px;
+    padding: 16px 24px; 
+    font-size: 1.1rem; 
+    font-weight: 600;
     cursor: pointer;
-    transition: opacity 0.3s;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    margin-top: 15px;
+    width: 100%; 
+    box-sizing: border-box;
+}
+
+#btn-enviar:hover {
+    background-color: #7e2ccad7; 
+}
+
+#btn-enviar:active {
+    transform: scale(0.99); 
+}
+
+#btn-enviar:disabled {
+    background-color: #484f58;
+    color: #8b949e;
+    cursor: not-allowed;
+}
+
+/* Ajuste de padding para telas menores */
+@media (max-width: 768px) {
+    #contact-form {
+        padding: 25px 20px;
+    }
+}
+
+/* Container Principal do Toast */
+.toast {
+    position: fixed;
+    top: -100px; /* Começa escondido acima da tela */
+    right: 20px;
+    background-color: #161b22; /* Fundo escuro igual ao GitHub */
+    color: #ffffff;
+    padding: 16px 24px;
+    border-radius: 8px;
+    border: 1px solid #30363d;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    z-index: 10000;
+    transition: top 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Efeito elástico */
+}
+
+/* Quando estiver ativo, ele desce */
+.toast.show {
+    top: 20px;
+}
+
+/* Conteúdo interno */
+.toast-content {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.toast-icon {
+    font-size: 1.2rem;
+}
+
+/* Linha de progresso roxa na parte inferior */
+.toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: 100%;
+    background: linear-gradient(to right, #8a2be2, #a855f7);
+    transform-origin: left;
+}
+
+/* Animação que esvazia a barra em 3 segundos */
+.toast.show .toast-progress {
+    animation: progressAnim 3s linear forwards;
+}
+
+@keyframes progressAnim {
+    to {
+        transform: scaleX(0);
+    }
 }
 
 /* ==========================================

@@ -156,6 +156,36 @@
         </div>
     </section>
 
+    <section id="trilha-profissional" class="section-padding">
+    <div class="container">
+        <h2 class="section-title" style="text-align: center; margin-bottom: 50px;">Trilha de Expêriencias Profissionais</h2>
+        
+        <div class="timeline-wrapper">
+            <div class="timeline-progress-line"></div>
+            
+            <div class="timeline-item">
+                <div class="timeline-dot"></div>
+                
+                <div class="timeline-content">
+                    <h3 class="job-title">Estágio de T.I. - Monitoria <a href="fiap.com.br" style="color: #ee145b;">(FIAP)</a></h3>
+                    <span class="job-date">2024 - 2026</span>
+                    
+                    <p class="job-description">
+                        Atuação na área tecnica de resolução de problemas de hardware, audiovisual e atendimento ao cliente, desde problemas de login até a realização de switchs de rede para laboratorios.
+                    </p>
+                    
+                    <ul class="job-topics">
+                        <li><span class="topic-badge">Atendimento ao cliente</span> Resolução de problemas de alunos.</li>
+                        <li><span class="topic-badge">Comunicação</span> Utilizada para entender dores e explicar soluções.</li>
+                        <li><span class="topic-badge">Hardware</span> Concertar máquinas com problemas técnicos.</li>
+                    </ul>
+                </div>
+            </div>
+
+            </div>
+    </div>
+</section>
+
     <section id="cursos" class="section-padding">
         <div class="container">
             <header class="portfolio-header">
@@ -173,7 +203,7 @@
         </div>
     </section>
 
-    <section id="repositorios" class="section-padding bg-darker">
+    <section id="repositorios" class="section-padding repositorios">
         <div class="container">
             <header class="portfolio-header">
                 <h2 class="section-title" style="margin:0">Repositórios do GitHub</h2>
@@ -196,19 +226,43 @@
         <div class="container">
             <h2 class="section-title">Contato</h2>
             <div class="contact-form-container">
-                <form id="contact-form">
-                    <input type="text" placeholder="Seu Nome" required>
-                    <input type="email" placeholder="Seu E-mail" required>
-                    <input type="tel" placeholder="Seu Telefone">
-                    <textarea placeholder="Sua Mensagem" rows="6"></textarea>
-                    <div class="file-input-wrapper">
-                        <input type="file" id="file-upload">
-                    </div>
-                    <button type="submit" class="btn-send">Enviar</button>
-                </form>
+                <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<form id="contact-form">
+    <div class="input-group">
+        <label for="nome">Nome</label>
+        <input type="text" id="nome" name="nome" required>
+    </div>
+
+    <div class="input-group">
+        <label for="email">E-mail</label>
+        <input type="email" id="email" name="email" list="email-suggestions" required>
+        <datalist id="email-suggestions"></datalist>
+    </div>
+
+    <div class="input-group">
+        <label for="telefone">Telefone</label>
+        <input type="text" id="telefone" name="telefone" maxlength="15" placeholder="(XX) XXXXX-XXXX" required>
+    </div>
+
+    <div class="input-group">
+        <label for="mensagem">Mensagem</label>
+        <textarea id="mensagem" name="mensagem" style="resize: vertical; min-height: 100px;" required></textarea>
+    </div>
+
+    <button type="submit" id="btn-enviar">Enviar Mensagem</button>
+</form>
             </div>
         </div>
     </section>
+
+    <div id="toast-notification" class="toast">
+    <div class="toast-content">
+        <span class="toast-icon">✨</span>
+        <span class="toast-message">Mensagem enviada com sucesso! Entrarei em contato em breve.</span>
+    </div>
+    <div class="toast-progress"></div>
+</div>
 
     <footer class="main-footer">
     <div class="footer-container">

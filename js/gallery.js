@@ -1,5 +1,5 @@
 // ==========================================
-// GALERIA: pilha de polaroids nas experiências
+// GALERIA: painéis expansíveis (estilo HUD) nas experiências
 // ==========================================
 // Como usar (no index.html, dentro do .timeline-content, logo depois do texto):
 //   <div class="timeline-media" data-gallery aria-label="Fotos de ...">
@@ -8,7 +8,8 @@
 //   </div>
 // Fotos que não carregam são removidas. Sem nenhuma foto, a galeria não aparece
 // e o card da experiência continua como era.
-const GALLERY_AUTOPLAY_MS = 5000;
+// O avanço automático é guiado pela barra de progresso (CSS): ela pausa
+// com o mouse/foco, fora da tela e com "reduzir movimento".
 
 function loadImage(img) {
     return new Promise((resolve) => {
@@ -28,117 +29,114 @@ async function setupGallery(root) {
     if (!figs.length) return;
 
     const n = figs.length;
+    const pad = (v) => String(v).padStart(2, '0');
     let index = 0;
-    let timer = null;
-    let visible = false;
-    let paused = false;
 
-    // Monta a pilha
-    const stack = document.createElement('div');
-    stack.className = 'photo-stack';
-    stack.tabIndex = 0;
-    stack.setAttribute('role', 'group');
-    stack.setAttribute('aria-roledescription', 'carrossel');
-    stack.setAttribute('aria-label', root.getAttribute('aria-label') || 'Fotos');
-    figs.forEach(f => { f.classList.add('polaroid'); stack.appendChild(f); });
+    // Monta os painéis
+    const strip = document.createElement('div');
+    strip.className = 'reel-strip';
+    strip.tabIndex = 0;
+    strip.setAttribute('role', 'group');
+    strip.setAttribute('aria-roledescription', 'carrossel');
+    strip.setAttribute('aria-label', root.getAttribute('aria-label') || 'Fotos');
+    figs.forEach((f, i) => {
+        f.classList.add('reel-item');
+        f.dataset.idx = 'IMG_' + pad(i + 1);
+        strip.appendChild(f);
+    });
 
     const gallery = document.createElement('div');
-    gallery.className = 'gallery';
-    gallery.appendChild(stack);
+    gallery.className = 'reel';
+    gallery.appendChild(strip);
 
-    let dots = [];
+    // Barra de status: contador, progresso e setas
+    let counter = null;
+    let fill = null;
     if (n > 1) {
-        const controls = document.createElement('div');
-        controls.className = 'gallery-controls';
+        const bar = document.createElement('div');
+        bar.className = 'reel-bar';
 
-        const chevron = (d) => `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
-        const prev = document.createElement('button');
-        prev.type = 'button'; prev.className = 'gallery-btn'; prev.setAttribute('aria-label', 'Foto anterior');
-        prev.innerHTML = chevron('M15 18l-6-6 6-6');
-        const next = document.createElement('button');
-        next.type = 'button'; next.className = 'gallery-btn'; next.setAttribute('aria-label', 'Próxima foto');
-        next.innerHTML = chevron('M9 18l6-6-6-6');
+        counter = document.createElement('span');
+        counter.className = 'reel-counter';
 
-        const dotsWrap = document.createElement('div');
-        dotsWrap.className = 'gallery-dots';
-        dots = figs.map((_, i) => {
-            const d = document.createElement('button');
-            d.type = 'button'; d.className = 'gallery-dot';
-            d.setAttribute('aria-label', 'Ir para a foto ' + (i + 1));
-            d.addEventListener('click', () => { goTo(i); restart(); });
-            dotsWrap.appendChild(d);
-            return d;
-        });
+        const progress = document.createElement('div');
+        progress.className = 'reel-progress';
+        fill = document.createElement('span');
+        progress.appendChild(fill);
 
-        prev.addEventListener('click', () => { step(-1); restart(); });
-        next.addEventListener('click', () => { step(1); restart(); });
-        controls.append(prev, dotsWrap, next);
-        gallery.appendChild(controls);
+        const chevron = (d) => `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="${d}"/></svg>`;
+        const mkBtn = (label, d, dir) => {
+            const b = document.createElement('button');
+            b.type = 'button'; b.className = 'reel-btn';
+            b.setAttribute('aria-label', label);
+            b.innerHTML = chevron(d);
+            b.addEventListener('click', () => step(dir));
+            return b;
+        };
+
+        bar.append(counter, progress, mkBtn('Foto anterior', 'M15 18l-6-6 6-6', -1), mkBtn('Próxima foto', 'M9 18l6-6-6-6', 1));
+        gallery.appendChild(bar);
+
+        // fim da barra = próxima foto
+        fill.addEventListener('animationend', () => step(1));
     }
 
     function render() {
-        figs.forEach((f, i) => {
-            const pos = (i - index + n) % n;
-            f.dataset.pos = pos;
-            f.setAttribute('aria-hidden', pos !== 0);
-        });
-        dots.forEach((d, i) => d.classList.toggle('active', i === index));
+        figs.forEach((f, i) => f.classList.toggle('active', i === index));
+        if (counter) counter.innerHTML = `<b>${pad(index + 1)}</b> / ${pad(n)}`;
+        if (fill) { // reinicia a animação da barra
+            fill.classList.remove('run');
+            void fill.offsetWidth;
+            fill.classList.add('run');
+        }
     }
 
     function goTo(target) {
         if (n < 2 || target === index) return;
-        const leaving = figs[index];
-        leaving.classList.add('leaving');
-        setTimeout(() => leaving.classList.remove('leaving'), 380);
         index = target;
         render();
     }
     function step(dir) { goTo((index + dir + n) % n); }
 
-    // Autoplay: só quando visível, sem hover/foco e sem "reduzir movimento"
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    function stop() { clearInterval(timer); timer = null; }
-    function start() {
-        if (n < 2 || reduce || timer || paused || !visible) return;
-        timer = setInterval(() => step(1), GALLERY_AUTOPLAY_MS);
-    }
-    function restart() { stop(); start(); }
-
+    // Pausa: mouse, foco e fora da tela
+    const setPaused = (v) => gallery.classList.toggle('paused', v);
+    let hovering = false, focused = false, visible = false;
+    const sync = () => setPaused(hovering || focused || !visible);
+    gallery.addEventListener('mouseenter', () => { hovering = true; sync(); });
+    gallery.addEventListener('mouseleave', () => { hovering = false; sync(); });
+    // só foco por teclado pausa (clicar num botão não deve travar o avanço)
+    gallery.addEventListener('focusin', (e) => { focused = e.target.matches(':focus-visible'); sync(); });
+    gallery.addEventListener('focusout', () => { focused = false; sync(); });
     new IntersectionObserver((entries) => {
         visible = entries[0].isIntersecting;
-        visible ? start() : stop();
+        sync();
     }, { threshold: 0.3 }).observe(gallery);
+    sync();
 
-    gallery.addEventListener('mouseenter', () => { paused = true; stop(); });
-    gallery.addEventListener('mouseleave', () => { paused = false; start(); });
-    gallery.addEventListener('focusin', () => { paused = true; stop(); });
-    gallery.addEventListener('focusout', () => { paused = false; start(); });
-
-    // Clique/toque passa a foto; arrastar para o lado navega
+    // Clique em um painel abre ele; clique no aberto passa para o próximo. Arrastar navega.
     let startX = null;
-    stack.addEventListener('pointerdown', (e) => { startX = e.clientX; });
-    stack.addEventListener('pointercancel', () => { startX = null; });
-    stack.addEventListener('pointerup', (e) => {
+    strip.addEventListener('pointerdown', (e) => { startX = e.clientX; });
+    strip.addEventListener('pointercancel', () => { startX = null; });
+    strip.addEventListener('pointerup', (e) => {
         if (startX === null) return;
         const dx = e.clientX - startX;
         startX = null;
-        if (Math.abs(dx) > 40) step(dx < 0 ? 1 : -1);
-        else if (Math.abs(dx) < 8) step(1);
-        restart();
+        if (Math.abs(dx) > 40) return step(dx < 0 ? 1 : -1);
+        if (Math.abs(dx) >= 8) return;
+        const item = e.target.closest('.reel-item');
+        if (!item) return;
+        const i = figs.indexOf(item);
+        i === index ? step(1) : goTo(i);
     });
-    stack.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowRight') { step(1); restart(); e.preventDefault(); }
-        if (e.key === 'ArrowLeft') { step(-1); restart(); e.preventDefault(); }
+    strip.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowRight') { step(1); e.preventDefault(); }
+        if (e.key === 'ArrowLeft') { step(-1); e.preventDefault(); }
     });
 
     // Publica
     root.replaceChildren(gallery);
     render();
     root.classList.add('ready');
-    // Só muda o layout da timeline quando o bloco está AO LADO do card (filho direto do item).
-    // Dentro do card (padrão), nada muda no layout.
-    const parent = root.parentElement;
-    if (parent && parent.classList.contains('timeline-item')) parent.classList.add('has-media');
     // o layout mudou: recalcula a linha roxa da timeline
     if (typeof updateTimelineProgress === 'function') updateTimelineProgress();
 }

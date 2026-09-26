@@ -5,6 +5,7 @@
 // então initReveal precisa rodar depois dela.
 initHeader();
 initTimeline();
+initGallery();
 initSkills();
 initCourses();
 initReveal();

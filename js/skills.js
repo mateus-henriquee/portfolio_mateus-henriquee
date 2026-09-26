@@ -32,9 +32,9 @@ const skillGroups = [
     {
         title: 'Apoio: Web & Design', icon: 'fa-solid fa-code',
         items: [
-            { name: 'HTML / CSS / JS', icon: 'fa-solid fa-code', level: 'practicing', desc: 'Interfaces web e visualizações no navegador.', url: 'https://developer.mozilla.org/pt-BR/' },
+            { name: 'HTML / CSS / JS', icon: 'fa-solid fa-code', level: 'core', desc: 'Interfaces web e visualizações no navegador.', url: 'https://developer.mozilla.org/pt-BR/' },
             { name: 'Node.js', icon: 'fa-brands fa-node-js', level: 'practicing', desc: 'APIs e automações em JavaScript.', url: 'https://nodejs.org/docs/latest/api/' },
-            { name: 'Figma', icon: 'fa-brands fa-figma', level: 'practicing', desc: 'Protótipos e layouts de dashboards.', url: 'https://help.figma.com/' }
+            { name: 'Figma', icon: 'fa-brands fa-figma', level: 'core', desc: 'Protótipos e layouts de dashboards.', url: 'https://help.figma.com/' }
         ]
     }
 ];

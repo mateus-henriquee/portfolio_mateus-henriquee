@@ -39,3 +39,85 @@
     .timeline-item, .timeline-item:nth-child(odd) { justify-content: flex-end; }
     .timeline-content { width: calc(100% - 50px); }
 }
+
+/* ==========================================
+   GALERIA DE FOTOS (pilha de polaroids)
+   Fica no lado vazio da linha do tempo, sem cobrir o card.
+   Só aparece se a experiência tiver ao menos 1 foto válida.
+   ========================================== */
+.timeline-media { display: none; }
+.timeline-media.ready { display: block; width: 45%; padding-top: 6px; }
+
+/* padding: as fotos giradas, a fita e a sombra ficam DENTRO da caixa e não tocam o texto */
+.gallery { max-width: 400px; margin: 0 auto; padding: 32px 24px 0; }
+.photo-stack {
+    position: relative; aspect-ratio: 1 / 0.95; cursor: pointer;
+    touch-action: pan-y; outline: none;
+}
+.photo-stack:focus-visible { outline: 2px solid var(--accent); outline-offset: 14px; border-radius: 6px; }
+
+.polaroid {
+    position: absolute; inset: 0; margin: 0; padding: 10px 10px 0;
+    display: flex; flex-direction: column;
+    background: #f4f1ea; border-radius: 4px; box-shadow: 0 12px 32px rgba(0, 0, 0, .6);
+    transition: transform .55s cubic-bezier(.2, .8, .2, 1), opacity .45s ease;
+    will-change: transform; user-select: none;
+}
+.polaroid img {
+    flex: 1; min-height: 0; width: 100%; display: block; object-fit: cover;
+    background: #161b22; pointer-events: none; -webkit-user-drag: none;
+}
+.polaroid figcaption {
+    height: 46px; padding: 0 8px; display: flex; align-items: center; justify-content: center;
+    color: #2b2433; text-align: center; overflow: hidden;
+    font: 600 .85rem/1.2 "Segoe Print", "Bradley Hand", "Comic Sans MS", cursive;
+}
+/* fita adesiva */
+.polaroid::before {
+    content: ''; position: absolute; top: -11px; left: 50%; width: 84px; height: 22px;
+    transform: translateX(-50%) rotate(-3deg);
+    background: rgba(168, 85, 247, .55); border: 1px solid rgba(255, 255, 255, .18);
+}
+
+.polaroid[data-pos="0"] { transform: rotate(-2.5deg); z-index: 3; }
+.polaroid[data-pos="1"] { transform: translate(14px, -8px) rotate(3deg) scale(.97); z-index: 2; }
+.polaroid[data-pos="2"] { transform: translate(-12px, -14px) rotate(-6deg) scale(.94); z-index: 1; }
+.polaroid:not([data-pos="0"]):not([data-pos="1"]):not([data-pos="2"]) {
+    transform: translateY(-20px) scale(.9); opacity: 0; z-index: 0; pointer-events: none;
+}
+/* foto que sai da frente da pilha */
+.polaroid.leaving { transform: translate(72%, 8%) rotate(16deg); opacity: 0; z-index: 4; }
+
+.gallery-controls { display: flex; align-items: center; justify-content: center; gap: 14px; margin-top: 26px; }
+.gallery-btn {
+    width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center;
+    background: var(--card-bg); color: var(--text-secondary); border: 1px solid var(--border-color);
+    cursor: pointer; transition: .2s;
+}
+.gallery-btn:hover, .gallery-btn:focus-visible { color: var(--accent); border-color: var(--accent); outline: none; }
+.gallery-dots { display: flex; align-items: center; gap: 8px; }
+.gallery-dot {
+    width: 8px; height: 8px; padding: 0; border: none; border-radius: 999px;
+    background: var(--border-color); cursor: pointer; transition: .3s;
+}
+.gallery-dot:hover { background: var(--text-secondary); }
+.gallery-dot.active { width: 22px; background: var(--accent); }
+
+/* ---------- Dentro do card (padrão): centralizada, abaixo do texto ---------- */
+.timeline-content .timeline-media.ready {
+    width: 100%; margin-top: 26px; padding: 0 0 4px;
+    border-top: 1px dashed var(--border-color);
+    overflow: hidden; /* a foto que sai desliza dentro do card, sem invadir a linha do tempo */
+}
+
+/* ---------- Alternativa: foto ao lado do card (bloco fora do .timeline-content) ---------- */
+@media (min-width: 769px) {
+    .timeline-item.has-media { justify-content: space-between; align-items: flex-start; }
+    .timeline-item.has-media:nth-child(odd) { flex-direction: row-reverse; }
+}
+
+/* ---------- Mobile: foto abaixo do card ---------- */
+@media (max-width: 768px) {
+    .timeline-item.has-media { flex-direction: column; align-items: flex-end; gap: 28px; }
+    .timeline-media.ready { width: calc(100% - 50px); }
+}

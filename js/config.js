@@ -3,6 +3,8 @@
 // ==========================================
 const username = 'mateus-henriquee'; // usuário GitHub
 
+const PORTFOLIO_REPO = 'portfolio_mateus-henriquee'; // repositório deste site (pasta img/certificados)
+
 // Escapa texto vindo de fora (API do GitHub) antes de inserir no HTML
 const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 

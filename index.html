@@ -10,7 +10,20 @@
     <meta property="og:image" content="https://github.com/mateus-henriquee.png">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="css/root.css">
+    <link rel="stylesheet" href="css/header.css">
+    <link rel="stylesheet" href="css/hero.css">
+    <link rel="stylesheet" href="css/about.css">
+    <link rel="stylesheet" href="css/skills.css">
+    <link rel="stylesheet" href="css/projects.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/dropdown.css">
+    <link rel="stylesheet" href="css/experience.css">
+    <link rel="stylesheet" href="css/education.css">
+    <link rel="stylesheet" href="css/courses.css">
+    <link rel="stylesheet" href="css/contact.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/footer.css">
 </head>
 <body>
 
@@ -240,7 +253,20 @@
                         <label for="mensagem">Mensagem</label>
                         <textarea id="mensagem" name="mensagem" required></textarea>
                     </div>
-                    <button type="submit" id="btn-enviar">Enviar mensagem</button>
+                    <div class="form-actions">
+                        <button type="button" id="btn-attach" class="btn-attach" aria-label="Anexar arquivo" title="Anexar arquivo">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
+                            </svg>
+                        </button>
+                        <input type="file" id="anexo" name="anexo" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" hidden>
+                        <button type="submit" id="btn-enviar">Enviar mensagem</button>
+                    </div>
+                    <div class="file-chip" id="file-chip" hidden>
+                        <span class="file-name" id="file-name"></span>
+                        <button type="button" id="file-remove" aria-label="Remover anexo">&times;</button>
+                    </div>
+                    <p class="file-error" id="file-error" role="alert" hidden></p>
                 </form>
             </div>
         </div>
@@ -305,6 +331,15 @@
     </footer>
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script src="script.js"></script>
+    <script src="js/config.js"></script>
+    <script src="js/header.js"></script>
+    <script src="js/timeline.js"></script>
+    <script src="js/skills.js"></script>
+    <script src="js/projects.js"></script>
+    <script src="js/courses.js"></script>
+    <script src="js/dropdown.js"></script>
+    <script src="js/contact.js"></script>
+    <script src="js/reveal.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>

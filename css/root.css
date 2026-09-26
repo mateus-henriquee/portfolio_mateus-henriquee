@@ -1,0 +1,51 @@
+/* ==========================================
+   ROOT: variáveis, reset, base e utilitários
+   ========================================== */
+:root {
+    --bg-color: #000;
+    --card-bg: #0d1117;
+    --card-hover: #14101f;
+    --border-color: #30363d;
+    --accent: #a855f7;
+    --accent-dark: #8a2be2;
+    --text-primary: #f0f6fc;
+    --text-secondary: #8b949e;
+    --glow: 0 0 14px rgba(154, 47, 255, 0.55);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; scroll-padding-top: 90px; }
+
+body {
+    background: var(--bg-color);
+    color: var(--text-primary);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+a { text-decoration: none; color: inherit; }
+.link-accent { color: #ee145b; }
+
+.container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+/* ---------- Seções (comum) ---------- */
+.section-padding { padding: 90px 0; }
+.bg-darker { background: #050505; }
+.section-title { text-align: center; font-size: 2rem; margin-bottom: 14px; }
+.section-title::after {
+    content: ''; display: block; width: 50px; height: 3px; margin: 12px auto 0;
+    background: var(--accent); border-radius: 2px;
+}
+.section-lead { text-align: center; color: var(--text-secondary); margin-bottom: 36px; }
+
+/* ---------- Animação de entrada ---------- */
+.reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ---------- Acessibilidade ---------- */
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+    .reveal { opacity: 1; transform: none; }
+}

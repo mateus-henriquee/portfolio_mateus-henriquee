@@ -1,0 +1,13 @@
+/* ==========================================
+   TOAST: notificação de mensagem enviada
+   ========================================== */
+.toast {
+    position: fixed; top: -120px; right: 20px; background: #161b22; padding: 16px 24px;
+    border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 8px 24px rgba(0, 0, 0, .5);
+    overflow: hidden; z-index: 10000; transition: top .4s cubic-bezier(.68, -.55, .265, 1.55);
+}
+.toast.show { top: 76px; }
+.toast-content { display: flex; align-items: center; gap: 12px; font-size: .95rem; font-weight: 500; }
+.toast-progress { position: absolute; bottom: 0; left: 0; height: 3px; width: 100%; background: linear-gradient(to right, #8a2be2, #a855f7); transform-origin: left; }
+.toast.show .toast-progress { animation: progressAnim 3s linear forwards; }
+@keyframes progressAnim { to { transform: scaleX(0); } }

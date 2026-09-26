@@ -1,0 +1,28 @@
+/* ==========================================
+   FOOTER
+   ========================================== */
+.main-footer { background: var(--card-bg); border-top: 2px solid var(--accent); padding: 60px 20px 20px; }
+.footer-container { max-width: 1100px; margin: 0 auto; display: flex; justify-content: space-between; align-items: flex-start; gap: 40px; }
+.footer-brand-section { display: flex; flex-direction: column; gap: 30px; flex: 1; }
+.footer-profile { display: flex; align-items: center; gap: 15px; }
+.footer-avatar { width: 65px; height: 65px; border-radius: 50%; border: 2px solid var(--accent); object-fit: cover; }
+.footer-brand-info { display: flex; flex-direction: column; }
+.footer-name { font-size: 1.3rem; font-weight: bold; }
+.footer-title { color: var(--text-secondary); font-size: .85rem; }
+.footer-socials h4 { color: var(--text-secondary); font-size: .8rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+.social-icons-grid { display: flex; gap: 18px; }
+.social-icons-grid a { color: var(--text-secondary); font-size: 22px; transition: .2s; }
+.social-icons-grid a:hover { color: var(--accent); transform: translateY(-3px); }
+.footer-links-grid { display: grid; grid-template-columns: repeat(3, minmax(130px, 1fr)); gap: 40px; flex: 1.5; }
+.footer-column h3 { color: var(--accent); font-size: .9rem; margin-bottom: 18px; text-transform: uppercase; letter-spacing: .5px; }
+.footer-column ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.footer-column a { color: #c9d1d9; font-size: .9rem; transition: .2s; }
+.footer-column a:hover { color: #fff; text-decoration: underline; }
+.footer-bottom { max-width: 1100px; margin: 40px auto 0; padding-top: 20px; border-top: 1px solid var(--border-color); display: flex; justify-content: center; }
+.footer-bottom p { color: var(--text-secondary); font-size: .8rem; }
+
+/* ---------- Mobile ---------- */
+@media (max-width: 768px) {
+    .footer-container { flex-direction: column; gap: 40px; }
+    .footer-links-grid { grid-template-columns: 1fr; gap: 26px; width: 100%; }
+}

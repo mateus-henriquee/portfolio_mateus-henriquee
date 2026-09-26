@@ -1,0 +1,10 @@
+/* ==========================================
+   DROPDOWN: seletor "Exibir: N" (Projetos e Cursos)
+   ========================================== */
+.dropdown { position: relative; }
+.dropdown-button { background: #161b22; color: #fff; border: 1px solid var(--border-color); padding: 8px 15px; border-radius: 6px; cursor: pointer; font: inherit; font-size: 14px; }
+.dropdown-button:hover { border-color: var(--accent); }
+.dropdown-content { display: none; position: absolute; right: 0; top: calc(100% + 4px); min-width: 140px; background: #161b22; border: 1px solid var(--border-color); border-radius: 6px; z-index: 10; overflow: hidden; }
+.dropdown-content.show { display: block; }
+.dropdown-content button { background: none; border: none; color: #fff; padding: 10px 20px; width: 100%; text-align: left; cursor: pointer; font: inherit; font-size: 14px; }
+.dropdown-content button:hover { background: var(--accent-dark); }

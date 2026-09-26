@@ -1,0 +1,41 @@
+/* ==========================================
+   EXPERIÊNCIA: linha do tempo
+   ========================================== */
+.timeline-wrapper { position: relative; max-width: 1000px; margin: 40px auto 0; padding: 40px 0; }
+.timeline-wrapper::before {
+    content: ''; position: absolute; left: 50%; top: 0; width: 4px; height: 100%;
+    background: var(--border-color); transform: translateX(-50%); border-radius: 2px;
+}
+.timeline-progress-line {
+    position: absolute; left: 50%; top: 0; width: 4px; height: 0;
+    background: linear-gradient(to bottom, #a855f7, #6366f1);
+    transform: translateX(-50%); border-radius: 2px; z-index: 1; transition: height .1s ease-out;
+}
+.timeline-item { position: relative; width: 100%; margin-bottom: 60px; display: flex; justify-content: flex-start; }
+.timeline-item:nth-child(odd) { justify-content: flex-end; }
+.timeline-item:last-child { margin-bottom: 0; }
+.timeline-dot {
+    position: absolute; left: 50%; top: 30px; width: 16px; height: 16px;
+    background: var(--card-bg); border: 3px solid var(--border-color);
+    transform: translate(-50%, -50%); z-index: 2; transition: .3s;
+}
+.timeline-item.active .timeline-dot { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 10px rgba(168, 85, 247, .5); }
+.timeline-content {
+    width: 45%; background: var(--card-bg); border: 1px solid var(--border-color);
+    border-radius: 8px; padding: 25px; transition: .3s;
+}
+.timeline-content:hover { background: #100d17; transform: translateY(-5px); box-shadow: var(--glow); }
+.timeline-item.active .timeline-content { border-color: rgba(168, 85, 247, .4); }
+.job-title { font-size: 1.2rem; margin-bottom: 5px; }
+.job-date { color: var(--accent); font-size: .9rem; font-weight: 500; display: inline-block; margin-bottom: 14px; }
+.job-description { color: var(--text-secondary); font-size: .95rem; margin-bottom: 18px; }
+.job-topics { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.job-topics li { color: #c9d1d9; font-size: .9rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* ---------- Mobile ---------- */
+@media (max-width: 768px) {
+    .timeline-wrapper::before, .timeline-progress-line { left: 20px; transform: none; }
+    .timeline-dot { left: 20px; }
+    .timeline-item, .timeline-item:nth-child(odd) { justify-content: flex-end; }
+    .timeline-content { width: calc(100% - 50px); }
+}

@@ -1,0 +1,17 @@
+/* ==========================================
+   PROJETOS: busca e filtros por linguagem
+   (os cards ficam em cards.css)
+   ========================================== */
+.toolbar { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 26px; }
+.toolbar input[type="search"] {
+    background: #010409; border: 1px solid var(--border-color); color: #fff;
+    padding: 9px 14px; border-radius: 6px; min-width: 200px; outline: none; font: inherit; font-size: 14px;
+}
+.toolbar input:focus { border-color: var(--accent); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; flex: 1; }
+.chip {
+    background: var(--card-bg); color: var(--text-secondary); border: 1px solid var(--border-color);
+    padding: 6px 14px; border-radius: 999px; font-size: 13px; cursor: pointer; transition: .2s;
+}
+.chip:hover { color: #fff; border-color: var(--accent); }
+.chip.active { background: var(--accent-dark); border-color: var(--accent-dark); color: #fff; }

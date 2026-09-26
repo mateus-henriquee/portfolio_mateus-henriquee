@@ -1,0 +1,6 @@
+/* ==========================================
+   CURSOS: cabeçalho da seção
+   (os cards ficam em cards.css)
+   ========================================== */
+.portfolio-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; flex-wrap: wrap; gap: 12px; }
+.portfolio-header .section-title::after { margin-left: 0; }

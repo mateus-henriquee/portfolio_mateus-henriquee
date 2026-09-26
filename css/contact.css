@@ -1,0 +1,62 @@
+/* ==========================================
+   CONTATO: informações e formulário
+   ========================================== */
+.contact-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 40px; margin-top: 40px; align-items: start; }
+.contact-info p { color: #c9d1d9; margin-bottom: 24px; }
+.contact-info ul { list-style: none; display: flex; flex-direction: column; gap: 16px; }
+.contact-info li { display: flex; align-items: center; gap: 14px; }
+.contact-info li i { color: var(--accent); width: 20px; text-align: center; }
+.contact-info a:hover { color: var(--accent); }
+
+#contact-form {
+    background: var(--card-bg); border: 1px solid var(--border-color); border-radius: 8px;
+    padding: 32px; display: flex; flex-direction: column; gap: 20px;
+}
+.input-group { display: flex; flex-direction: column; gap: 8px; }
+.input-group label { color: #c9d1d9; font-size: .95rem; font-weight: 500; }
+.input-group input, .input-group textarea {
+    width: 100%; padding: 14px 16px; background: #010409; border: 1px solid var(--border-color);
+    border-radius: 6px; color: #fff; font: inherit; outline: none; transition: .2s;
+}
+.input-group textarea { min-height: 140px; resize: vertical; }
+.input-group input:focus, .input-group textarea:focus { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(168, 85, 247, .2); }
+.input-group input::placeholder { color: #484f58; }
+#btn-enviar {
+    background: #832fd1; color: #fff; border: none; border-radius: 6px; padding: 14px 24px;
+    font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: .2s;
+}
+#btn-enviar:hover { background: #7126b8; }
+#btn-enviar:active { transform: scale(.99); }
+#btn-enviar:disabled { background: #484f58; color: var(--text-secondary); cursor: not-allowed; }
+
+/* ---------- Anexo de arquivo ---------- */
+.form-actions { display: flex; gap: 12px; align-items: stretch; }
+.form-actions #btn-enviar { flex: 1; }
+.btn-attach {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 52px; flex-shrink: 0; background: #010409; color: var(--text-secondary);
+    border: 1px solid var(--border-color); border-radius: 6px; cursor: pointer; transition: .2s;
+}
+.btn-attach:hover, .btn-attach:focus-visible { color: var(--accent); border-color: var(--accent); outline: none; }
+.btn-attach.has-file { color: var(--accent); border-color: var(--accent); background: rgba(168, 85, 247, .12); }
+.file-chip {
+    display: inline-flex; align-items: center; gap: 10px; align-self: flex-start; max-width: 100%;
+    background: rgba(138, 43, 226, .2); color: var(--accent); border-radius: 999px; padding: 6px 8px 6px 14px; font-size: 13px;
+}
+.file-chip[hidden], .file-error[hidden] { display: none; }
+.file-chip .file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.file-chip button {
+    background: none; border: none; color: inherit; font-size: 18px; line-height: 1; cursor: pointer;
+    width: 22px; height: 22px; border-radius: 50%;
+}
+.file-chip button:hover { background: rgba(255, 255, 255, .12); }
+.file-error { color: #f85149; font-size: 13px; margin-top: -6px; }
+
+/* ---------- Responsivo ---------- */
+@media (max-width: 900px) {
+    .contact-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+    #contact-form { padding: 22px 18px; }
+}

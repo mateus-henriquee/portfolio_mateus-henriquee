@@ -8,7 +8,7 @@
     <meta property="og:title" content="Mateus Henrique | Analista de Dados">
     <meta property="og:description" content="Transformo dados em decisões. Python, SQL, Power BI e Big Data.">
     <meta property="og:image" content="https://github.com/mateus-henriquee.png">
-    <link rel="icon" href="https://avatars.githubusercontent.com/u/99336388?v=4">📊</text></svg>">
+    <link rel="icon" href="https://avatars.githubusercontent.com/u/99336388?v=4">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/root.css">
     <link rel="stylesheet" href="css/header.css">
@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="css/experience.css">
     <link rel="stylesheet" href="css/education.css">
     <link rel="stylesheet" href="css/courses.css">
+    <link rel="stylesheet" href="css/resume.css">
     <link rel="stylesheet" href="css/contact.css">
     <link rel="stylesheet" href="css/toast.css">
     <link rel="stylesheet" href="css/footer.css">
@@ -41,6 +42,7 @@
                 <a href="#experiencia">Experiência</a>
                 <a href="#formacoes">Formação</a>
                 <a href="#cursos">Cursos</a>
+                <a href="#curriculo">Currículo</a>
                 <a href="#contato">Contato</a>
             </div>
         </nav>
@@ -54,7 +56,7 @@
                 <span class="hero-tag"><i class="fa-solid fa-circle"></i> Aberto a estágio em Dados</span>
                 <h1>Mateus Henrique<br><span class="gradient-text">Leccese da Silva</span></h1>
                 <p class="subtitle">Analista de Dados em formação</p>
-                <p class="hero-lead">Transformo dados brutos em decisões claras. Trabalho com <strong>Python</strong>, <strong>SQL</strong>, <strong>Power BI</strong> e <strong>Databricks</strong>.</p>
+                <p class="hero-lead">Transformo dados brutos em decisões claras. Trabalho com <strong>Python</strong>, <strong>SQL / NoSQL</strong>, <strong>Power BI</strong> e <strong>Databricks</strong>.</p>
                 <div class="hero-actions">
                     <a href="#projetos" class="btn btn-primary"><i class="fa-solid fa-chart-column"></i> Ver projetos</a>
                     <a href="#contato" class="btn btn-ghost"><i class="fa-solid fa-envelope"></i> Falar comigo</a>
@@ -152,12 +154,17 @@
                             <li><span class="topic-badge">Hardware</span> Diagnóstico e conserto de máquinas.</li>
                             <li><span class="topic-badge">Redes</span> Configuração de switches em laboratórios.</li>
                         </ul>
+
+                        <!-- Fotos desta experiência (ficam dentro do card, abaixo do texto).
+                             Coloque as imagens em img/experiencies/fiap/. Cada <figure> é uma foto.
+                             Sem fotos válidas, este bloco some sozinho. -->
                         <div class="timeline-media" data-gallery aria-label="Fotos da experiência na FIAP">
-    <figure><img src="img/experiencies/fiap/img2.jpeg" alt="Último dia de estágio na monitoria"><figcaption>Time monitoria FIAP Lins</figcaption></figure>
-    <figure><img src="img/experiencies/fiap/img3.jpeg" alt="Apresentação de evento escolar em Santos"><figcaption>Apresentação de evento escolar em Santos</figcaption></figure>
-    <figure><img src="img/experiencies/fiap/img4.jpeg" alt="Troca de equipamentos em laboratório"><figcaption>Trocando equipamentos</figcaption></figure>
-    <figure><img src="img/experiencies/fiap/img5.jpeg" alt="Time da monitoria da FIAP Paulista"><figcaption>Time monitoria FIAP Paulista</figcaption></figure>
-</div>
+                            <figure><img src="img/experiencies/fiap/img1.jpeg" alt="Time da monitoria da FIAP Lins reunido"><figcaption>Time monitoria FIAP Lins</figcaption></figure>
+                            <figure><img src="img/experiencies/fiap/img2.jpeg" alt="Último dia na monitoria"><figcaption>Último dia</figcaption></figure>
+                            <figure><img src="img/experiencies/fiap/img3.jpeg" alt="Apresentação de evento escolar em Santos"><figcaption>Evento escolar em Santos</figcaption></figure>
+                            <figure><img src="img/experiencies/fiap/img4.jpeg" alt="Troca de equipamentos em laboratório"><figcaption>Trocando equipamentos</figcaption></figure>
+                            <figure><img src="img/experiencies/fiap/img5.jpeg" alt="Time da monitoria da FIAP Paulista"><figcaption>Time monitoria FIAP Paulista</figcaption></figure>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -224,6 +231,24 @@
                 </div>
             </header>
             <div id="alura-container" class="repos-grid"></div>
+        </div>
+    </section>
+
+    <!-- CURRÍCULO (Google Docs: qualquer alteração no documento aparece aqui) -->
+    <section id="curriculo" class="section-padding">
+        <div class="container">
+            <header class="portfolio-header">
+                <h2 class="section-title" style="margin:0">Currículo</h2>
+                <div class="resume-actions">
+                    <a id="resume-download" class="btn btn-primary" href="#" target="_blank" rel="noopener"><i class="fa-solid fa-download"></i> Baixar CV</a>
+                    <a class="btn btn-ghost" href="https://www.linkedin.com/in/devmateus-henriquee" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin-in"></i> Conectar no LinkedIn</a>
+                </div>
+            </header>
+            <div class="resume-frame" id="resume-frame">
+                <div class="resume-loading"><i class="fa-solid fa-file-lines"></i> Carregando currículo...</div>
+                <iframe id="resume-embed" title="Currículo de Mateus Henrique Leccese da Silva" loading="lazy" referrerpolicy="no-referrer"></iframe>
+            </div>
+            <p class="resume-note">Meu currículo. <a id="resume-open" href="#" target="_blank" rel="noopener">Abrir em tela cheia <i class="fa-solid fa-arrow-up-right-from-square"></i></a></p>
         </div>
     </section>
 
@@ -314,6 +339,7 @@
                         <li><a href="#skills">Habilidades</a></li>
                         <li><a href="#projetos">Projetos</a></li>
                         <li><a href="#cursos">Cursos</a></li>
+                        <li><a href="#curriculo">Currículo</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
@@ -344,6 +370,7 @@
     <script src="js/skills.js"></script>
     <script src="js/projects.js"></script>
     <script src="js/courses.js"></script>
+    <script src="js/resume.js"></script>
     <script src="js/dropdown.js"></script>
     <script src="js/contact.js"></script>
     <script src="js/reveal.js"></script>

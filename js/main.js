@@ -8,6 +8,7 @@ initTimeline();
 initGallery();
 initSkills();
 initCourses();
+initResume();
 initReveal();
 initProjects();
 initDropdowns();

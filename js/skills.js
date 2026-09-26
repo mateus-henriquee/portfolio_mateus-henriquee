@@ -32,31 +32,51 @@ const skillGroups = [
     {
         title: 'Apoio: Web & Design', icon: 'fa-solid fa-code',
         items: [
-            { name: 'HTML / CSS / JS', icon: 'fa-solid fa-code', level: 'core', desc: 'Interfaces web e visualizações no navegador.', url: 'https://developer.mozilla.org/pt-BR/' },
+            { name: 'HTML / CSS / JS', icon: 'fa-solid fa-code', level: 'practicing', desc: 'Interfaces web e visualizações no navegador.', url: 'https://developer.mozilla.org/pt-BR/' },
             { name: 'Node.js', icon: 'fa-brands fa-node-js', level: 'practicing', desc: 'APIs e automações em JavaScript.', url: 'https://nodejs.org/docs/latest/api/' },
-            { name: 'Figma', icon: 'fa-brands fa-figma', level: 'core', desc: 'Protótipos e layouts de dashboards.', url: 'https://help.figma.com/' }
+            { name: 'Figma', icon: 'fa-brands fa-figma', level: 'practicing', desc: 'Protótipos e layouts de dashboards.', url: 'https://help.figma.com/' }
         ]
     }
 ];
 
 const levelLabels = { core: 'Base sólida', practicing: 'Praticando', learning: 'Em estudo' };
 
+// Cada grupo abre e fecha (todos começam abertos)
 function renderSkills() {
     const container = document.getElementById('skills-container');
     if (!container) return;
-    container.innerHTML = skillGroups.map(group => `
-        <div class="skill-group reveal">
-            <h3><i class="${group.icon}"></i> ${esc(group.title)}</h3>
-            <div class="skills-grid">
-                ${group.items.map(s => `
-                    <a class="skill-card" href="${esc(s.url)}" target="_blank" rel="noopener">
-                        <i class="${s.icon}"></i>
-                        <h4>${esc(s.name)}</h4>
-                        <p>${esc(s.desc)}</p>
-                        <span class="level ${s.level}">${levelLabels[s.level]}</span>
-                    </a>`).join('')}
+    container.innerHTML = skillGroups.map((group, i) => `
+        <div class="skill-group reveal is-open">
+            <h3>
+                <button type="button" class="skill-toggle" aria-expanded="true" aria-controls="skills-panel-${i}">
+                    <i class="${group.icon}"></i>
+                    <span>${esc(group.title)}</span>
+                    <span class="skill-count">${group.items.length}</span>
+                    <i class="fa-solid fa-chevron-down skill-chevron" aria-hidden="true"></i>
+                </button>
+            </h3>
+            <div class="skills-collapse" id="skills-panel-${i}">
+                <div class="skills-collapse-inner">
+                    <div class="skills-grid">
+                        ${group.items.map(s => `
+                            <a class="skill-card" href="${esc(s.url)}" target="_blank" rel="noopener">
+                                <i class="${s.icon}"></i>
+                                <h4>${esc(s.name)}</h4>
+                                <p>${esc(s.desc)}</p>
+                                <span class="level ${s.level}">${levelLabels[s.level]}</span>
+                            </a>`).join('')}
+                    </div>
+                </div>
             </div>
         </div>`).join('');
+
+    container.querySelectorAll('.skill-toggle').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const group = btn.closest('.skill-group');
+            const open = group.classList.toggle('is-open');
+            btn.setAttribute('aria-expanded', open);
+        });
+    });
 
     const total = skillGroups.reduce((n, g) => n + g.items.length, 0);
     const el = document.getElementById('stat-techs');

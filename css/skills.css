@@ -3,12 +3,30 @@
    ========================================== */
 .section-title + #skills-container { margin-top: 40px; }
 
-.skill-group { margin-bottom: 40px; }
-.skill-group h3 {
-    font-size: 1rem; text-transform: uppercase; letter-spacing: 1px;
-    color: var(--text-secondary); margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
-}
+.skill-group { margin-bottom: 28px; }
+.skill-group h3 { font-size: 1rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
 .skill-group h3 i { color: var(--accent); }
+
+/* título clicável: abre e fecha o grupo */
+.skill-toggle {
+    width: 100%; display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+    background: transparent; border: 1px solid transparent; border-radius: 8px; cursor: pointer;
+    color: var(--text-secondary); font: inherit; letter-spacing: inherit; text-transform: inherit; text-align: left;
+    transition: color .2s, background .2s, border-color .2s;
+}
+.skill-toggle:hover, .skill-toggle:focus-visible { color: var(--text-primary); background: var(--card-bg); border-color: var(--border-color); outline: none; }
+.skill-count {
+    font-size: 11px; letter-spacing: 0; padding: 1px 8px; border-radius: 999px;
+    border: 1px solid var(--border-color); color: var(--text-secondary);
+}
+.skill-chevron { margin-left: auto; font-size: .8rem; transition: transform .35s; }
+.skill-group:not(.is-open) .skill-chevron { transform: rotate(-90deg); }
+
+/* abre/fecha suave (grid 1fr -> 0fr) */
+.skills-collapse { display: grid; grid-template-rows: 1fr; transition: grid-template-rows .4s ease; }
+.skills-collapse-inner { min-height: 0; overflow: hidden; padding-top: 10px; margin-top: -10px; } /* folga p/ o card subir no hover */
+.skill-group:not(.is-open) .skills-collapse { grid-template-rows: 0fr; }
+.skill-group:not(.is-open) .skills-collapse-inner { visibility: hidden; transition: visibility 0s .4s; } /* tira os links do Tab */
 .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; }
 .skill-card {
     display: block; background: var(--card-bg); border: 1px solid var(--border-color);

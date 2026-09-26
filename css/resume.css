@@ -1,0 +1,49 @@
+/* ==========================================
+   CURRÍCULO: documento incorporado e botões
+   ========================================== */
+.resume-actions { display: flex; gap: 12px; flex-wrap: wrap; }
+/* Borda neon girando. O @property permite animar o ângulo do gradiente. */
+@property --neon-angle { syntax: '<angle>'; inherits: false; initial-value: 0deg; }
+.resume-frame {
+    position: relative; isolation: isolate; max-width: 860px; margin: 0 auto; height: 1040px;
+    border-radius: 10px;
+}
+.resume-frame::before, .resume-frame::after {
+    content: ''; position: absolute; inset: -3px; padding: 3px; border-radius: 13px; z-index: 2; pointer-events: none;
+    background:
+        conic-gradient(from var(--neon-angle), transparent 0deg, #8a2be2 60deg, #a855f7 105deg, #6366f1 150deg, transparent 210deg, transparent 360deg),
+        linear-gradient(var(--border-color), var(--border-color));
+    /* mantém só o anel de 3px */
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+    animation: neon-spin 4s linear infinite;
+}
+/* brilho: mesmo gradiente, sem máscara (a máscara cortaria o desfoque), atrás do documento */
+.resume-frame::after {
+    padding: 0; z-index: -1; opacity: .9; filter: blur(14px);
+    background: conic-gradient(from var(--neon-angle), transparent 0deg, #8a2be2 60deg, #a855f7 105deg, #6366f1 150deg, transparent 210deg, transparent 360deg);
+    -webkit-mask: none; mask: none;
+}
+/* .is-hover vem do JS: o iframe do Google não repassa :hover ao pai */
+.resume-frame:hover::before, .resume-frame:hover::after,
+.resume-frame.is-hover::before, .resume-frame.is-hover::after,
+.resume-frame:focus-within::before, .resume-frame:focus-within::after { animation-play-state: paused; }
+@keyframes neon-spin { to { --neon-angle: 360deg; } }
+
+.resume-frame iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; border-radius: 10px; background: #fff; opacity: 0; transition: opacity .5s; }
+.resume-frame.loaded iframe { opacity: 1; }
+.resume-loading {
+    position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; gap: 10px;
+    color: var(--text-secondary); font-size: .95rem; background: var(--card-bg); border-radius: 10px;
+}
+.resume-frame.loaded .resume-loading { display: none; }
+.resume-note { text-align: center; color: var(--text-secondary); font-size: .9rem; margin-top: 16px; }
+.resume-note a { color: var(--accent); }
+.resume-note a:hover { text-decoration: underline; }
+
+@media (max-width: 768px) {
+    .resume-frame { height: 620px; }
+    .resume-actions { width: 100%; }
+    .resume-actions .btn { flex: 1; justify-content: center; }
+}

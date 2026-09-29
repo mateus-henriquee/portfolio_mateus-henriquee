@@ -17,6 +17,11 @@
 
 html { scroll-behavior: smooth; scroll-padding-top: 90px; }
 
+/* Rolagem com inércia (Lenis): evita que o "smooth" nativo dispute com a animação do JS */
+html.lenis, html.lenis body { height: auto; }
+html.lenis.lenis-smooth { scroll-behavior: auto !important; }
+html.lenis.lenis-stopped { overflow: hidden; }
+
 body {
     background: var(--bg-color);
     color: var(--text-primary);

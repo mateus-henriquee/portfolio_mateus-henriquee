@@ -134,6 +134,7 @@ function renderFilters() {
         repoLang = btn.dataset.lang;
         repoLimit = 6; // troca de filtro: recomeça mostrando 6, não continua de onde o "Ver mais" parou
         renderRepos();
+        syncFilterUI();
     }));
 
     const topicsToggle = document.getElementById('topics-toggle');
@@ -294,8 +295,7 @@ function filterProjectsBySkill(skillName) {
     syncFilterUI();
     renderRepos();
 
-    const target = document.getElementById('projetos');
-    if (target) target.scrollIntoView({ behavior: 'smooth' });
+    smoothScrollTo('#projetos');
 }
 
 // Chamado pelo dropdown "Exibir: N"

@@ -3,6 +3,7 @@
 // ==========================================
 // A ordem importa: initSkills cria elementos .reveal,
 // então initReveal precisa rodar depois dela.
+initSmoothScroll();
 initHeader();
 initTimeline();
 initGallery();

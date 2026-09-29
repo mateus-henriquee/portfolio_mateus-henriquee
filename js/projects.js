@@ -4,11 +4,16 @@
 const reposContainer = document.getElementById('repos-container');
 const repoSearch = document.getElementById('repo-search');
 const repoFilters = document.getElementById('repo-filters');
+const repoTopicsPanel = document.getElementById('repo-topics');
+const repoLoadMore = document.getElementById('repos-load-more');
+const REPOS_STEP = 3; // quantos projetos o "Ver mais" revela por clique
 
 let allRepos = [];
 let repoLimit = 6;
 let repoLang = 'Todos';
 let repoQuery = '';
+let repoTopic = null; // topic do GitHub selecionado (ex: "docker"), ou null
+let repoTopicsOpen = false;
 
 // Repositórios de outras pessoas/organizações nos quais colaborei. A API do GitHub não lista
 // isso publicamente sem login, então a lista é manual: adicione { owner, repo } como aparecem na URL.
@@ -22,7 +27,6 @@ const CONTRIBUTED_REPOS = [
 // Projetos fixados no topo (ordem da lista abaixo), acima dos ordenados por data.
 // Use "nome-do-repo" para um repositório seu, ou "dono/nome-do-repo" para um contribuído.
 const FEATURED_REPOS = [
-    'ORACLExDATASUS_challenge-FIAP-2026',
     'Fiap-Hackops/Projeto-Hackops-fiap-2026',
     'Guilherme-Rigobello/bluemind',
     'Danillo-Vidal/Plataforma-de-Recomenda-o-com-Neo4j-Redis-e-Python-'
@@ -122,12 +126,67 @@ function renderFilters() {
     if (!repoFilters) return;
     const langs = [...new Set(allRepos.map(r => r.language).filter(Boolean))].sort();
     const all = ['Todos', ...langs];
-    repoFilters.innerHTML = all.map(l => `<button class="chip ${l === repoLang ? 'active' : ''}" data-lang="${esc(l)}">${esc(l)}</button>`).join('');
-    repoFilters.querySelectorAll('.chip').forEach(btn => btn.addEventListener('click', () => {
+
+    repoFilters.innerHTML = all.map(l => `<button class="chip" data-lang="${esc(l)}">${esc(l)}</button>`).join('')
+        + `<button type="button" class="chip chip-toggle" id="topics-toggle" aria-expanded="false" aria-controls="repo-topics" aria-label="Mais filtros por assunto (topics do GitHub)"><i class="fa-solid fa-chevron-down"></i></button>`;
+
+    repoFilters.querySelectorAll('.chip[data-lang]').forEach(btn => btn.addEventListener('click', () => {
         repoLang = btn.dataset.lang;
-        repoFilters.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c === btn));
+        repoLimit = 6; // troca de filtro: recomeça mostrando 6, não continua de onde o "Ver mais" parou
         renderRepos();
     }));
+
+    const topicsToggle = document.getElementById('topics-toggle');
+    if (topicsToggle) {
+        topicsToggle.addEventListener('click', () => {
+            repoTopicsOpen = !repoTopicsOpen;
+            syncFilterUI();
+        });
+    }
+
+    renderTopicChips();
+    syncFilterUI();
+}
+
+// Chips de "topics" do GitHub (assuntos marcados nos meus repositórios), escondidos até abrir a seta
+function renderTopicChips() {
+    if (!repoTopicsPanel) return;
+    const langsLower = new Set(allRepos.map(r => (r.language || '').toLowerCase()));
+    const topics = [...new Set(allRepos.flatMap(r => r.topics || []))]
+        .filter(t => !langsLower.has(t.toLowerCase())) // evita repetir chip de linguagem como topic (ex.: "python")
+        .sort();
+
+    if (!topics.length) {
+        repoTopicsPanel.innerHTML = '';
+        const toggle = document.getElementById('topics-toggle');
+        if (toggle) toggle.hidden = true;
+        return;
+    }
+
+    repoTopicsPanel.innerHTML = topics.map(t => `<button class="chip" data-topic="${esc(t)}">${esc(t)}</button>`).join('');
+    repoTopicsPanel.querySelectorAll('.chip[data-topic]').forEach(btn => btn.addEventListener('click', () => {
+        repoTopic = repoTopic === btn.dataset.topic ? null : btn.dataset.topic; // clicar de novo desliga o filtro
+        repoLimit = 6;
+        renderRepos();
+        syncFilterUI();
+    }));
+}
+
+// Mantém os chips (linguagem + topics) e o painel de topics em sincronia com o estado atual
+function syncFilterUI() {
+    if (repoFilters) {
+        repoFilters.querySelectorAll('.chip[data-lang]').forEach(c => c.classList.toggle('active', c.dataset.lang === repoLang));
+    }
+    const toggle = document.getElementById('topics-toggle');
+    if (toggle) {
+        toggle.classList.toggle('open', repoTopicsOpen);
+        toggle.classList.toggle('active', !!repoTopic);
+        toggle.setAttribute('aria-expanded', repoTopicsOpen);
+    }
+    if (repoTopicsPanel) {
+        repoTopicsPanel.hidden = !repoTopicsOpen;
+        repoTopicsPanel.querySelectorAll('.chip[data-topic]').forEach(c => c.classList.toggle('active', c.dataset.topic === repoTopic));
+    }
 }
 
 function renderRepos() {
@@ -135,15 +194,19 @@ function renderRepos() {
 
     const filtered = allRepos.filter(r => {
         const okLang = repoLang === 'Todos' || r.language === repoLang;
+        const okTopic = !repoTopic || (r.topics || []).includes(repoTopic);
         const text = `${r.name} ${r.description || ''} ${(r.topics || []).join(' ')}`.toLowerCase();
-        return okLang && text.includes(repoQuery);
+        return okLang && okTopic && text.includes(repoQuery);
     });
     const list = filtered.slice(0, repoLimit);
 
     if (!list.length) {
         reposContainer.innerHTML = '<p class="empty">Nenhum projeto encontrado.</p>';
+        if (repoLoadMore) repoLoadMore.hidden = true;
         return;
     }
+
+    if (repoLoadMore) repoLoadMore.hidden = list.length >= filtered.length;
 
     reposContainer.innerHTML = '';
     list.forEach(repo => {
@@ -188,6 +251,53 @@ function renderRepos() {
     });
 }
 
+// Mapa: nome da skill (js/skills.js) -> como filtrar os projetos.
+// "lang" tenta bater com repo.language (GitHub); "query" cai na busca por texto (nome/descrição/tópicos).
+const SKILL_FILTER_MAP = {
+    'Python': { lang: 'Python' },
+    'Pandas': { query: 'pandas' },
+    'Estatística': { query: 'estatística' },
+    'Machine Learning': { query: 'machine learning' },
+    'SQL Server': { query: 'sql' },
+    'Oracle SQL': { query: 'sql' },
+    'MongoDB': { query: 'mongo' },
+    'Power BI': { query: 'power bi' },
+    'Databricks': { query: 'databricks' },
+    'Google Colab': { lang: 'Jupyter Notebook' },
+    'Docker': { query: 'docker' },
+    'HTML / CSS / JS': { query: 'html' },
+    'Node.js': { lang: 'JavaScript' },
+    'Figma': { query: 'figma' }
+};
+
+// Chamado pelos cards de habilidades: filtra os projetos pela skill clicada e rola até a seção
+function filterProjectsBySkill(skillName) {
+    const cfg = SKILL_FILTER_MAP[skillName] || { query: skillName.toLowerCase() };
+    repoLimit = 6;
+    repoTopic = null;
+    repoTopicsOpen = false;
+
+    // usa a linguagem só se algum repo carregado realmente tiver essa linguagem
+    const langs = new Set(allRepos.map(r => r.language).filter(Boolean));
+    const useLang = cfg.lang && langs.has(cfg.lang) ? cfg.lang : null;
+
+    if (useLang) {
+        repoLang = useLang;
+        repoQuery = '';
+        if (repoSearch) repoSearch.value = '';
+    } else {
+        repoLang = 'Todos';
+        repoQuery = (cfg.query || skillName).toLowerCase();
+        if (repoSearch) repoSearch.value = cfg.query || skillName;
+    }
+
+    syncFilterUI();
+    renderRepos();
+
+    const target = document.getElementById('projetos');
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+}
+
 // Chamado pelo dropdown "Exibir: N"
 function setRepoLimit(n) {
     repoLimit = n;
@@ -198,6 +308,13 @@ function initProjects() {
     if (repoSearch) {
         repoSearch.addEventListener('input', (e) => {
             repoQuery = e.target.value.trim().toLowerCase();
+            repoLimit = 6; // nova busca: recomeça mostrando 6
+            renderRepos();
+        });
+    }
+    if (repoLoadMore) {
+        repoLoadMore.addEventListener('click', () => {
+            repoLimit += REPOS_STEP;
             renderRepos();
         });
     }

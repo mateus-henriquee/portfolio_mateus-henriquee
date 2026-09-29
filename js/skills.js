@@ -59,12 +59,12 @@ function renderSkills() {
                 <div class="skills-collapse-inner">
                     <div class="skills-grid">
                         ${group.items.map(s => `
-                            <a class="skill-card" href="${esc(s.url)}" target="_blank" rel="noopener">
+                            <button type="button" class="skill-card" data-skill="${esc(s.name)}">
                                 <i class="${s.icon}"></i>
                                 <h4>${esc(s.name)}</h4>
                                 <p>${esc(s.desc)}</p>
                                 <span class="level ${s.level}">${levelLabels[s.level]}</span>
-                            </a>`).join('')}
+                            </button>`).join('')}
                     </div>
                 </div>
             </div>
@@ -75,6 +75,13 @@ function renderSkills() {
             const group = btn.closest('.skill-group');
             const open = group.classList.toggle('is-open');
             btn.setAttribute('aria-expanded', open);
+        });
+    });
+
+    // Clicar num card de habilidade rola até Projetos e já filtra pela habilidade clicada
+    container.querySelectorAll('.skill-card').forEach(card => {
+        card.addEventListener('click', () => {
+            if (typeof filterProjectsBySkill === 'function') filterProjectsBySkill(card.dataset.skill);
         });
     });
 

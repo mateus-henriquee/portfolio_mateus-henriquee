@@ -24,6 +24,8 @@
     display: inline-flex; align-items: center; gap: 8px;
     padding: 12px 22px; border-radius: 8px; font-weight: 600; font-size: 15px;
     border: 1px solid var(--border-color); transition: transform .2s, box-shadow .2s, background .2s;
+    /* <button> não herda cor/fonte do body como <a> herda: precisa ser dito explicitamente */
+    color: var(--text-primary); font-family: inherit; cursor: pointer;
 }
 .btn:hover { transform: translateY(-3px); }
 .btn-primary { background: var(--accent-dark); border-color: var(--accent-dark); }

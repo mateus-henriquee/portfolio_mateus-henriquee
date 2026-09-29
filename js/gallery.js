@@ -11,6 +11,64 @@
 // O avanço automático é guiado pela barra de progresso (CSS): ela pausa
 // com o mouse/foco, fora da tela e com "reduzir movimento".
 
+// ---------- Lightbox: foto em tela cheia ----------
+let lightboxEl = null;
+let lightboxLastFocused = null;
+
+function ensureLightbox() {
+    if (lightboxEl) return lightboxEl;
+    const overlay = document.createElement('div');
+    overlay.className = 'lightbox';
+    overlay.innerHTML = `
+        <button type="button" class="lightbox-close" aria-label="Fechar"><i class="fa-solid fa-xmark"></i></button>
+        <figure class="lightbox-figure">
+            <img class="lightbox-img" alt="">
+            <figcaption class="lightbox-caption"></figcaption>
+        </figure>`;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('.lightbox-close').addEventListener('click', closeLightbox);
+    overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) closeLightbox(); // clique fora da foto fecha
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && overlay.classList.contains('open')) closeLightbox();
+    });
+
+    lightboxEl = overlay;
+    return overlay;
+}
+
+function openLightbox(figure) {
+    const img = figure.querySelector('img');
+    if (!img) return;
+    const caption = figure.querySelector('figcaption');
+    const overlay = ensureLightbox();
+    const lbImg = overlay.querySelector('.lightbox-img');
+    const lbCaption = overlay.querySelector('.lightbox-caption');
+
+    lbImg.src = img.currentSrc || img.src;
+    lbImg.alt = img.alt || '';
+    if (caption && caption.textContent.trim()) {
+        lbCaption.textContent = caption.textContent;
+        lbCaption.hidden = false;
+    } else {
+        lbCaption.hidden = true;
+    }
+
+    lightboxLastFocused = document.activeElement;
+    overlay.classList.add('open');
+    document.body.classList.add('lightbox-lock');
+    overlay.querySelector('.lightbox-close').focus();
+}
+
+function closeLightbox() {
+    if (!lightboxEl || !lightboxEl.classList.contains('open')) return;
+    lightboxEl.classList.remove('open');
+    document.body.classList.remove('lightbox-lock');
+    if (lightboxLastFocused && typeof lightboxLastFocused.focus === 'function') lightboxLastFocused.focus();
+}
+
 function loadImage(img) {
     return new Promise((resolve) => {
         if (img.complete) return resolve(img.naturalWidth > 0);
@@ -126,11 +184,12 @@ async function setupGallery(root) {
         const item = e.target.closest('.reel-item');
         if (!item) return;
         const i = figs.indexOf(item);
-        i === index ? step(1) : goTo(i);
+        i === index ? openLightbox(item) : goTo(i);
     });
     strip.addEventListener('keydown', (e) => {
         if (e.key === 'ArrowRight') { step(1); e.preventDefault(); }
         if (e.key === 'ArrowLeft') { step(-1); e.preventDefault(); }
+        if (e.key === 'Enter' || e.key === ' ') { openLightbox(figs[index]); e.preventDefault(); }
     });
 
     // Publica

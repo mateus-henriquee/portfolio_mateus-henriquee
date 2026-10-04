@@ -29,7 +29,8 @@ const CONTRIBUTED_REPOS = [
 const FEATURED_REPOS = [
     'Fiap-Hackops/Projeto-Hackops-fiap-2026',
     'Guilherme-Rigobello/bluemind',
-    'Danillo-Vidal/Plataforma-de-Recomenda-o-com-Neo4j-Redis-e-Python-'
+    'Danillo-Vidal/Plataforma-de-Recomenda-o-com-Neo4j-Redis-e-Python-',
+    'mateus-henriquee/ORACLExDATASUS_challenge-FIAP-2026'
 ];
 
 const REPOS_CACHE_KEY = 'repos-v1';

@@ -9,7 +9,7 @@ function initSmoothScroll() {
     if (reduceMotion || typeof Lenis === 'undefined') return;
 
     lenis = new Lenis({
-        duration: 1.1,
+        duration: 0.6,
         easing: (t) => 1 - Math.pow(1 - t, 3), // ease-out cúbico
         smoothWheel: true,
         touchMultiplier: 1.15

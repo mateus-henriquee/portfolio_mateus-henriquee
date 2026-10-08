@@ -76,4 +76,3 @@ Hospedado na **Vercel**, com deploy automático a cada push na branch `main`.
 
 - E-mail: mateush.leccese@gmail.com
 - LinkedIn: https://www.linkedin.com/in/devmateus-henriquee
-- GitHub: https://github.com/mateus-henriquee

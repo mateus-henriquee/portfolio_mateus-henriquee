@@ -1,323 +1,246 @@
 // ==========================================
-// PROJETOS: repositórios do GitHub (próprios + contribuições) — busca, filtro e limite
+// PROJETOS: repositórios do GitHub (meus + forks + contribuições)
+// busca, filtro por linguagem, filtro por topics, "Ver mais" e filtro vindo das Skills
 // ==========================================
-const reposContainer = document.getElementById('repos-container');
-const repoSearch = document.getElementById('repo-search');
-const repoFilters = document.getElementById('repo-filters');
-const repoTopicsPanel = document.getElementById('repo-topics');
-const repoLoadMore = document.getElementById('repos-load-more');
-const REPOS_STEP = 3; // quantos projetos o "Ver mais" revela por clique
+(() => {
+    const USER = (typeof username !== 'undefined' && username) ? username : 'mateus-henriquee';
 
-let allRepos = [];
-let repoLimit = 6;
-let repoLang = 'Todos';
-let repoQuery = '';
-let repoTopic = null; // topic do GitHub selecionado (ex: "docker"), ou null
-let repoTopicsOpen = false;
+    // ---------- dados editáveis ----------
+    // Repositórios de outras pessoas em que contribuí (aparecem com o selo "Contribuidor")
+    const CONTRIBUTED_REPOS = [
+        { owner: 'Fiap-Hackops', repo: 'Projeto-Hackops-fiap-2026' },
+        { owner: 'Danillo-Vidal', repo: 'Plataforma-de-Recomenda-o-com-Neo4j-Redis-e-Python-' },
+        { owner: 'Guilherme-Rigobello', repo: 'bluemind' },
+        { owner: 'dpereirajuli', repo: 'aloSolucoes' }
+    ];
+    // Fixados no topo, na ordem desta lista (selo verde "Destaque"). Pode ser "nome" ou "dono/nome".
+    const FEATURED_REPOS = [
+        'Fiap-Hackops/Projeto-Hackops-fiap-2026',
+        'bluemind',
+        'Danillo-Vidal/Plataforma-de-Recomenda-o-com-Neo4j-Redis-e-Python-'
+    ];
+    // Todos os meus forks entram sozinhos. Para esconder algum, coloque o nome aqui.
+    const HIDDEN_FORKS = [];
 
-// Repositórios de outras pessoas/organizações nos quais colaborei. A API do GitHub não lista
-// isso publicamente sem login, então a lista é manual: adicione { owner, repo } como aparecem na URL.
-const CONTRIBUTED_REPOS = [
-    { owner: 'Fiap-Hackops', repo: 'Projeto-Hackops-fiap-2026' },
-    { owner: 'Danillo-Vidal', repo: 'Plataforma-de-Recomenda-o-com-Neo4j-Redis-e-Python-' },
-    { owner: 'Guilherme-Rigobello', repo: 'bluemind' },
-    { owner: 'dpereirajuli', repo: 'aloSolucoes' }
-];
+    // Skill clicada -> como filtrar. "lang" = linguagem do GitHub; "query" = busca por texto.
+    const SKILL_FILTER_MAP = {
+        'Python': { lang: 'Python' },
+        'Pandas': { query: 'pandas' },
+        'Estatística': { query: 'estatística' },
+        'Machine Learning': { query: 'machine learning' },
+        'SQL Server': { query: 'sql' },
+        'Oracle SQL': { query: 'sql' },
+        'MongoDB': { query: 'mongo' },
+        'Power BI': { query: 'power bi' },
+        'Databricks': { query: 'databricks' },
+        'Google Colab': { lang: 'Jupyter Notebook' },
+        'Docker': { query: 'docker' },
+        'HTML / CSS / JS': { query: 'html' },
+        'Node.js': { lang: 'JavaScript' },
+        'Figma': { query: 'figma' }
+    };
 
-// Projetos fixados no topo (ordem da lista abaixo), acima dos ordenados por data.
-// Use "nome-do-repo" para um repositório seu, ou "dono/nome-do-repo" para um contribuído.
-const FEATURED_REPOS = [
-    'Fiap-Hackops/Projeto-Hackops-fiap-2026',
-    'Guilherme-Rigobello/bluemind',
-    'Danillo-Vidal/Plataforma-de-Recomenda-o-com-Neo4j-Redis-e-Python-',
-    'mateus-henriquee/ORACLExDATASUS_challenge-FIAP-2026'
-];
+    const STEP = 3, FIRST = 6;
+    const CACHE_KEY = 'repos-v3', CACHE_MS = 10 * 60 * 1000;
 
-const REPOS_CACHE_KEY = 'repos-v1';
-const REPOS_CACHE_MS = 10 * 60 * 1000; // 10 min: poupa o limite de 60 chamadas/hora do GitHub sem login
+    // ---------- elementos / estado ----------
+    const $ = (id) => document.getElementById(id);
+    const container = $('repos-container'), search = $('repo-search'), filters = $('repo-filters'),
+          topicsPanel = $('repo-topics'), moreBtn = $('repos-load-more'), allBtn = $('repos-load-all');
+    if (!container) return;
 
-async function fetchOwnRepos() {
-    const res = await fetch(`https://api.github.com/users/${username}/repos?sort=pushed&per_page=100`);
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
-    return data.filter(r => !r.fork && r.name.toLowerCase() !== username.toLowerCase());
-}
+    let all = [], limit = FIRST, lang = 'Todos', query = '', topic = null, topicsOpen = false;
+    const els = new Map(); // full_name -> elemento (reaproveita o card: a animação não recomeça)
 
-async function fetchContributedRepos() {
-    const results = await Promise.all(CONTRIBUTED_REPOS.map(async ({ owner, repo }) => {
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const J = async (url) => { const r = await fetch(url); if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); };
+
+    // ---------- busca na API (com cache e plano B) ----------
+    async function fetchLive() {
+        const own = (await J(`https://api.github.com/users/${USER}/repos?sort=pushed&per_page=100`))
+            .filter(r => r.name.toLowerCase() !== USER.toLowerCase() && !(r.fork && HIDDEN_FORKS.includes(r.name)))
+            .map(r => r.fork ? { ...r, _contributor: true } : r);
+
+        const contrib = (await Promise.all(CONTRIBUTED_REPOS.map(async c => {
+            try { return { ...(await J(`https://api.github.com/repos/${c.owner}/${c.repo}`)), _contributor: true }; }
+            catch { return null; }
+        }))).filter(Boolean);
+
+        // se eu tenho fork do mesmo projeto, vale o fork (sem duplicar)
+        const keep = contrib.filter(c => !own.some(r => r.fork && r.name === c.name));
+        return [...own, ...keep];
+    }
+    const readCache = (ignoreAge) => {
         try {
-            const res = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
-            if (!res.ok) throw new Error('HTTP ' + res.status);
-            const data = await res.json();
-            data._contributor = true; // marca para exibir o selo, sem mexer nos campos do GitHub
-            return data;
-        } catch (e) {
-            return null; // repositório indisponível (nome errado, privado, API fora do ar): some da lista sozinho
-        }
-    }));
-    return results.filter(Boolean);
-}
+            const c = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
+            return c && (ignoreAge || Date.now() - c.t < CACHE_MS) ? c.data : null;
+        } catch { return null; }
+    };
+    const writeCache = (data) => { try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data })); } catch { /* sem cache, tudo bem */ } };
 
-// Marca destaques e ordena. Roda TODA VEZ (mesmo com dados vindos do cache), porque
-// FEATURED_REPOS pode mudar num novo envio de arquivo sem que o cache antigo saiba disso.
-function applyFeatured(list) {
-    list.forEach(r => {
-        r._featured = FEATURED_REPOS.includes(r.full_name) || FEATURED_REPOS.includes(r.name);
-    });
-    const featuredOrder = (r) => FEATURED_REPOS.indexOf(r.full_name) >= 0 ? FEATURED_REPOS.indexOf(r.full_name) : FEATURED_REPOS.indexOf(r.name);
-
-    return [...list].sort((a, b) => {
-        if (a._featured !== b._featured) return a._featured ? -1 : 1; // destaques primeiro
-        if (a._featured && b._featured) return featuredOrder(a) - featuredOrder(b); // na ordem da lista
-        return new Date(b.pushed_at) - new Date(a.pushed_at); // os demais, por data
-    });
-}
-
-function readCache() {
-    try {
-        const cached = JSON.parse(sessionStorage.getItem(REPOS_CACHE_KEY) || 'null');
-        if (cached && Date.now() - cached.t < REPOS_CACHE_MS) return cached.repos;
-    } catch (e) { /* sem cache */ }
-    return null;
-}
-
-function readStaleCache() {
-    // último resultado salvo, mesmo vencido — melhor que mostrar erro se a API estiver fora do ar
-    try {
-        const cached = JSON.parse(sessionStorage.getItem(REPOS_CACHE_KEY) || 'null');
-        return cached ? cached.repos : null;
-    } catch (e) {
-        return null;
-    }
-}
-
-function writeCache(repos) {
-    try { sessionStorage.setItem(REPOS_CACHE_KEY, JSON.stringify({ t: Date.now(), repos })); } catch (e) { /* ok */ }
-}
-
-function showRepos(repos) {
-    allRepos = repos;
-    const statRepos = document.getElementById('stat-repos');
-    if (statRepos) statRepos.textContent = allRepos.length;
-    renderFilters();
-    renderRepos();
-}
-
-async function fetchGithub() {
-    const cached = readCache();
-    if (cached) { showRepos(applyFeatured(cached)); return; } // evita gastar o limite de requisições à toa
-
-    try {
-        const [own, contributed] = await Promise.all([fetchOwnRepos(), fetchContributedRepos()]);
-        const raw = [...own, ...contributed]; // sem destaque/ordem ainda: isso é recalculado sempre, no cache ou não
-        writeCache(raw);
-        showRepos(applyFeatured(raw));
-    } catch (e) {
-        const stale = readStaleCache();
-        if (stale) { showRepos(applyFeatured(stale)); return; } // API falhou agora, mas tínhamos um resultado recente
-
-        console.warn('Repositórios: falha ao consultar a API do GitHub.', e);
-        if (reposContainer) {
-            reposContainer.innerHTML = `<p class="empty">Não consegui carregar os repositórios agora (provável limite de requisições do GitHub). Tente novamente em alguns minutos. <a class="link-accent" href="https://github.com/${username}?tab=repositories" target="_blank" rel="noopener">Ver no GitHub</a></p>`;
-        }
-    }
-}
-
-function renderFilters() {
-    if (!repoFilters) return;
-    const langs = [...new Set(allRepos.map(r => r.language).filter(Boolean))].sort();
-    const all = ['Todos', ...langs];
-
-    repoFilters.innerHTML = all.map(l => `<button class="chip" data-lang="${esc(l)}">${esc(l)}</button>`).join('')
-        + `<button type="button" class="chip chip-toggle" id="topics-toggle" aria-expanded="false" aria-controls="repo-topics" aria-label="Mais filtros por assunto (topics do GitHub)"><i class="fa-solid fa-chevron-down"></i></button>`;
-
-    repoFilters.querySelectorAll('.chip[data-lang]').forEach(btn => btn.addEventListener('click', () => {
-        repoLang = btn.dataset.lang;
-        repoLimit = 6; // troca de filtro: recomeça mostrando 6, não continua de onde o "Ver mais" parou
-        renderRepos();
-        syncFilterUI();
-    }));
-
-    const topicsToggle = document.getElementById('topics-toggle');
-    if (topicsToggle) {
-        topicsToggle.addEventListener('click', () => {
-            repoTopicsOpen = !repoTopicsOpen;
-            syncFilterUI();
+    // destaque e ordem são recalculados SEMPRE (mudou a lista acima? vale na hora, mesmo com cache)
+    function featuredIndex(r) {
+        const name = r.name.toLowerCase(), full = r.full_name.toLowerCase();
+        return FEATURED_REPOS.findIndex(f => {
+            f = f.toLowerCase();
+            return f === full || f === name || f.split('/').pop() === name;
         });
     }
-
-    renderTopicChips();
-    syncFilterUI();
-}
-
-// Chips de "topics" do GitHub (assuntos marcados nos meus repositórios), escondidos até abrir a seta
-function renderTopicChips() {
-    if (!repoTopicsPanel) return;
-    const langsLower = new Set(allRepos.map(r => (r.language || '').toLowerCase()));
-    const topics = [...new Set(allRepos.flatMap(r => r.topics || []))]
-        .filter(t => !langsLower.has(t.toLowerCase())) // evita repetir chip de linguagem como topic (ex.: "python")
-        .sort();
-
-    if (!topics.length) {
-        repoTopicsPanel.innerHTML = '';
-        const toggle = document.getElementById('topics-toggle');
-        if (toggle) toggle.hidden = true;
-        return;
+    function applyFeatured(list) {
+        return list.map(r => ({ ...r, _fi: featuredIndex(r) })).map(r => ({ ...r, _featured: r._fi >= 0 }))
+            .sort((a, b) => {
+                if (a._featured !== b._featured) return a._featured ? -1 : 1;
+                if (a._featured) return a._fi - b._fi;
+                return new Date(b.pushed_at) - new Date(a.pushed_at);
+            });
     }
 
-    repoTopicsPanel.innerHTML = topics.map(t => `<button class="chip" data-topic="${esc(t)}">${esc(t)}</button>`).join('');
-    repoTopicsPanel.querySelectorAll('.chip[data-topic]').forEach(btn => btn.addEventListener('click', () => {
-        repoTopic = repoTopic === btn.dataset.topic ? null : btn.dataset.topic; // clicar de novo desliga o filtro
-        repoLimit = 6;
-        renderRepos();
-        syncFilterUI();
-    }));
-}
-
-// Mantém os chips (linguagem + topics) e o painel de topics em sincronia com o estado atual
-function syncFilterUI() {
-    if (repoFilters) {
-        repoFilters.querySelectorAll('.chip[data-lang]').forEach(c => c.classList.toggle('active', c.dataset.lang === repoLang));
+    async function load() {
+        const cached = readCache(false);
+        if (cached) return show(cached);
+        try {
+            const data = await fetchLive();
+            writeCache(data);
+            show(data);
+        } catch (e) {
+            const stale = readCache(true);
+            if (stale) return show(stale);
+            container.innerHTML = `<p class="empty">Não consegui carregar os repositórios agora (provável limite de requisições do GitHub). Tente novamente em alguns minutos. <a class="link" href="https://github.com/${USER}?tab=repositories" target="_blank" rel="noopener">Ver no GitHub</a></p>`;
+            Motion.setStat('stat-repos', '–');
+        }
     }
-    const toggle = document.getElementById('topics-toggle');
-    if (toggle) {
-        toggle.classList.toggle('open', repoTopicsOpen);
-        toggle.classList.toggle('active', !!repoTopic);
-        toggle.setAttribute('aria-expanded', repoTopicsOpen);
-    }
-    if (repoTopicsPanel) {
-        repoTopicsPanel.hidden = !repoTopicsOpen;
-        repoTopicsPanel.querySelectorAll('.chip[data-topic]').forEach(c => c.classList.toggle('active', c.dataset.topic === repoTopic));
-    }
-}
-
-function renderRepos() {
-    if (!reposContainer) return;
-
-    const filtered = allRepos.filter(r => {
-        const okLang = repoLang === 'Todos' || r.language === repoLang;
-        const okTopic = !repoTopic || (r.topics || []).includes(repoTopic);
-        const text = `${r.name} ${r.description || ''} ${(r.topics || []).join(' ')}`.toLowerCase();
-        return okLang && okTopic && text.includes(repoQuery);
-    });
-    const list = filtered.slice(0, repoLimit);
-
-    if (!list.length) {
-        reposContainer.innerHTML = '<p class="empty">Nenhum projeto encontrado.</p>';
-        if (repoLoadMore) repoLoadMore.hidden = true;
-        return;
+    function show(raw) {
+        all = applyFeatured(raw);
+        Motion.setStat('stat-repos', all.length);
+        renderFilters();
+        render();
     }
 
-    if (repoLoadMore) repoLoadMore.hidden = list.length >= filtered.length;
+    // ---------- filtros ----------
+    function renderFilters() {
+        const langs = [...new Set(all.map(r => r.language).filter(Boolean))].sort();
+        filters.innerHTML = ['Todos', ...langs].map(l => `<button type="button" class="chip" data-lang="${esc(l)}">${esc(l)}</button>`).join('')
+            + `<button type="button" class="chip chip-toggle" id="topics-toggle" aria-expanded="false" aria-controls="repo-topics" aria-label="Mais filtros por assunto (topics do GitHub)"><i class="fa-solid fa-chevron-down"></i></button>`;
 
-    reposContainer.innerHTML = '';
-    list.forEach(repo => {
-        const contributor = !!repo._contributor;
-        const featured = !!repo._featured;
-        const owner = repo.full_name.split('/')[0];
+        filters.querySelectorAll('[data-lang]').forEach(b => b.addEventListener('click', () => {
+            lang = b.dataset.lang; limit = FIRST; render(); syncUI();
+        }));
+        $('topics-toggle').addEventListener('click', () => { topicsOpen = !topicsOpen; syncUI(); });
 
-        const card = document.createElement('div');
-        card.className = 'repo-card clickable';
-        card.onclick = (e) => { if (!e.target.closest('a')) window.open(repo.html_url, '_blank', 'noopener'); };
+        // topics reais dos meus repositórios (menos os que já são linguagem)
+        const langsLower = new Set(all.map(r => (r.language || '').toLowerCase()));
+        const topics = [...new Set(all.flatMap(r => r.topics || []))].filter(t => !langsLower.has(t.toLowerCase())).sort();
+        if (!topics.length) $('topics-toggle').hidden = true;
+        topicsPanel.innerHTML = topics.map(t => `<button type="button" class="chip" data-topic="${esc(t)}">${esc(t)}</button>`).join('');
+        topicsPanel.querySelectorAll('[data-topic]').forEach(b => b.addEventListener('click', () => {
+            topic = topic === b.dataset.topic ? null : b.dataset.topic; // clicar de novo desliga
+            limit = FIRST; render(); syncUI();
+        }));
+        syncUI();
+    }
+    function syncUI() {
+        filters.querySelectorAll('[data-lang]').forEach(c => c.classList.toggle('active', c.dataset.lang === lang));
+        const t = $('topics-toggle');
+        if (t) {
+            t.classList.toggle('open', topicsOpen);
+            t.classList.toggle('active', !!topic);
+            t.setAttribute('aria-expanded', topicsOpen);
+        }
+        topicsPanel.hidden = !topicsOpen;
+        topicsPanel.querySelectorAll('[data-topic]').forEach(c => c.classList.toggle('active', c.dataset.topic === topic));
+    }
 
-        const topics = (repo.topics || []).slice(0, 5).map(t => `<span class="topic-badge">${esc(t)}</span>`).join('');
+    // ---------- cards ----------
+    function makeCard(repo, i) {
+        const wrap = document.createElement('div');
+        wrap.className = 'card-wrap';
+        wrap.dataset.r3d = 'up';
+
+        const topics = (repo.topics || []).slice(0, 5).map(t => `<span class="badge">${esc(t)}</span>`).join('');
         const img = `https://raw.githubusercontent.com/${repo.full_name}/${repo.default_branch || 'main'}/prev.png`;
         const updated = new Date(repo.pushed_at).toLocaleDateString('pt-BR', { month: 'short', year: 'numeric' });
+        const owner = repo.owner && repo.owner.login;
         const demo = repo.homepage ? `<a href="${esc(repo.homepage)}" target="_blank" rel="noopener"><i class="fa-solid fa-arrow-up-right-from-square"></i> Demo</a>` : '';
+        const badges = (repo._featured ? `<span class="featured-badge"><i class="fa-solid fa-star"></i> Destaque</span>` : '')
+            + (repo._contributor ? `<span class="contrib-badge"><i class="fa-solid fa-code-branch"></i> Contribuidor</span>` : '');
 
-        card.innerHTML = `
-            <div class="repo-preview">
-                <i class="fa-solid fa-chart-simple ph"></i>
-                <img src="${img}" alt="Prévia de ${esc(repo.name)}" class="preview-img" loading="lazy" onerror="this.remove()">
-                <div class="repo-badges">
-                    ${featured ? '<span class="featured-badge"><i class="fa-solid fa-star"></i> Destaque</span>' : ''}
-                    ${contributor ? '<span class="contrib-badge"><i class="fa-solid fa-code-pull-request"></i> Contribuidor</span>' : ''}
+        wrap.innerHTML = `
+            <article class="repo-card" data-tilt>
+                <div class="repo-preview">
+                    <div class="ph-stack"><i class="fa-solid fa-chart-simple ph"></i></div>
+                    <img src="${esc(img)}" alt="Prévia de ${esc(repo.name)}" class="preview-img" loading="lazy" onerror="this.remove()">
+                    ${badges ? `<div class="repo-badges">${badges}</div>` : ''}
                 </div>
-            </div>
-            <div class="repo-body">
-                <h3 class="repo-title">${esc(repo.name)}</h3>
-                ${contributor ? `<p class="repo-owner">por ${esc(owner)}</p>` : ''}
-                <div>${topics}</div>
-                <p class="repo-description">${esc(repo.description) || 'Sem descrição'}</p>
-                <div class="repo-meta">
-                    ${repo.language ? `<span><i class="fa-solid fa-circle" style="color:#a855f7;font-size:8px"></i>${esc(repo.language)}</span>` : ''}
-                    <span><i class="fa-regular fa-star"></i>${repo.stargazers_count}</span>
-                    <span><i class="fa-regular fa-clock"></i>${updated}</span>
+                <div class="repo-body">
+                    <h3 class="repo-title">${esc(repo.name)}</h3>
+                    ${repo._contributor && owner && owner.toLowerCase() !== USER.toLowerCase() ? `<p class="repo-owner">por ${esc(owner)}</p>` : ''}
+                    <div class="badges">${topics}</div>
+                    <p class="repo-description">${esc(repo.description) || 'Sem descrição'}</p>
+                    <div class="repo-meta">
+                        ${repo.language ? `<span><i class="fa-solid fa-circle" style="color:var(--accent);font-size:7px"></i>${esc(repo.language)}</span>` : ''}
+                        <span><i class="fa-regular fa-star"></i>${repo.stargazers_count}</span>
+                        <span><i class="fa-regular fa-clock"></i>${updated}</span>
+                    </div>
+                    <div class="repo-links">
+                        <a href="${esc(repo.html_url)}" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Código</a>
+                        ${demo}
+                    </div>
                 </div>
-                <div class="repo-links">
-                    <a href="${esc(repo.html_url)}" target="_blank" rel="noopener"><i class="fa-brands fa-github"></i> Código</a>
-                    ${demo}
-                </div>
-            </div>`;
-        reposContainer.appendChild(card);
-    });
-}
-
-// Mapa: nome da skill (js/skills.js) -> como filtrar os projetos.
-// "lang" tenta bater com repo.language (GitHub); "query" cai na busca por texto (nome/descrição/tópicos).
-const SKILL_FILTER_MAP = {
-    'Python': { lang: 'Python' },
-    'Pandas': { query: 'pandas' },
-    'Estatística': { query: 'estatística' },
-    'Machine Learning': { query: 'machine learning' },
-    'SQL Server': { query: 'sql' },
-    'Oracle SQL': { query: 'sql' },
-    'MongoDB': { query: 'mongo' },
-    'Power BI': { query: 'power bi' },
-    'Databricks': { query: 'databricks' },
-    'Google Colab': { lang: 'Jupyter Notebook' },
-    'Docker': { query: 'docker' },
-    'HTML / CSS / JS': { query: 'html' },
-    'Node.js': { lang: 'JavaScript' },
-    'Figma': { query: 'figma' }
-};
-
-// Chamado pelos cards de habilidades: filtra os projetos pela skill clicada e rola até a seção
-function filterProjectsBySkill(skillName) {
-    const cfg = SKILL_FILTER_MAP[skillName] || { query: skillName.toLowerCase() };
-    repoLimit = 6;
-    repoTopic = null;
-    repoTopicsOpen = false;
-
-    // usa a linguagem só se algum repo carregado realmente tiver essa linguagem
-    const langs = new Set(allRepos.map(r => r.language).filter(Boolean));
-    const useLang = cfg.lang && langs.has(cfg.lang) ? cfg.lang : null;
-
-    if (useLang) {
-        repoLang = useLang;
-        repoQuery = '';
-        if (repoSearch) repoSearch.value = '';
-    } else {
-        repoLang = 'Todos';
-        repoQuery = (cfg.query || skillName).toLowerCase();
-        if (repoSearch) repoSearch.value = cfg.query || skillName;
-    }
-
-    syncFilterUI();
-    renderRepos();
-
-    smoothScrollTo('#projetos');
-}
-
-// Chamado pelo dropdown "Exibir: N"
-function setRepoLimit(n) {
-    repoLimit = n;
-    renderRepos();
-}
-
-function initProjects() {
-    if (repoSearch) {
-        repoSearch.addEventListener('input', (e) => {
-            repoQuery = e.target.value.trim().toLowerCase();
-            repoLimit = 6; // nova busca: recomeça mostrando 6
-            renderRepos();
+            </article>`;
+        wrap.firstElementChild.addEventListener('click', (e) => {
+            if (!e.target.closest('a')) window.open(repo.html_url, '_blank', 'noopener');
         });
+        return wrap;
     }
-    if (repoLoadMore) {
-        repoLoadMore.addEventListener('click', () => {
-            repoLimit += REPOS_STEP;
-            renderRepos();
+
+    function render() {
+        const filtered = all.filter(r => {
+            const okLang = lang === 'Todos' || r.language === lang;
+            const okTopic = !topic || (r.topics || []).includes(topic);
+            const text = `${r.name} ${r.description || ''} ${(r.topics || []).join(' ')}`.toLowerCase();
+            return okLang && okTopic && text.includes(query);
         });
+        const list = filtered.slice(0, limit);
+
+        if (!list.length) {
+            container.innerHTML = '<p class="empty">Nenhum projeto encontrado.</p>';
+        } else {
+            container.replaceChildren(...list.map((r, i) => {
+                let el = els.get(r.full_name);
+                if (!el) { el = makeCard(r, i); els.set(r.full_name, el); }
+                el.dataset.delay = i % 3;
+                return el;
+            }));
+        }
+        Motion.refresh();
+
+        const rest = filtered.length - list.length;
+        moreBtn.hidden = rest <= 0;
+        allBtn.hidden = rest <= STEP;
+        if (rest > 0) allBtn.textContent = `Ver todos (${filtered.length})`;
     }
-    fetchGithub();
-}
+
+    // ---------- eventos ----------
+    search.addEventListener('input', (e) => { query = e.target.value.trim().toLowerCase(); limit = FIRST; render(); });
+    moreBtn.addEventListener('click', () => { limit += STEP; render(); });
+    allBtn.addEventListener('click', () => { limit = Infinity; render(); });
+
+    // chamado pelos cards de Skills: filtra e rola até Projetos
+    window.filterProjectsBySkill = function (skill) {
+        const cfg = SKILL_FILTER_MAP[skill] || { query: skill.toLowerCase() };
+        limit = FIRST; topic = null; topicsOpen = false;
+
+        // usa a linguagem só se algum repo carregado realmente tiver essa linguagem
+        const langs = new Set(all.map(r => r.language).filter(Boolean));
+        if (cfg.lang && langs.has(cfg.lang)) {
+            lang = cfg.lang; query = ''; search.value = '';
+        } else {
+            lang = 'Todos'; query = (cfg.query || skill).toLowerCase(); search.value = cfg.query || skill;
+        }
+        syncUI();
+        render();
+        $('projetos').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    load();
+})();

@@ -1,154 +1,41 @@
-/* ==========================================
-   EXPERIÊNCIA: linha do tempo
-   ========================================== */
-.timeline-wrapper { position: relative; max-width: 1000px; margin: 40px auto 0; padding: 40px 0; }
-.timeline-wrapper::before {
-    content: ''; position: absolute; left: 50%; top: 0; width: 4px; height: 100%;
-    background: var(--border-color); transform: translateX(-50%); border-radius: 2px;
-}
-.timeline-progress-line {
-    position: absolute; left: 50%; top: 0; width: 4px; height: 0;
-    background: linear-gradient(to bottom, #a855f7, #6366f1);
-    transform: translateX(-50%); border-radius: 2px; z-index: 1; transition: height .1s ease-out;
-}
-.timeline-item { position: relative; width: 100%; margin-bottom: 60px; display: flex; justify-content: flex-start; }
-.timeline-item:nth-child(odd) { justify-content: flex-end; }
-.timeline-item:last-child { margin-bottom: 0; }
-.timeline-dot {
-    position: absolute; left: 50%; top: 30px; width: 16px; height: 16px;
-    background: var(--card-bg); border: 3px solid var(--border-color);
-    transform: translate(-50%, -50%); z-index: 2; transition: .3s;
-}
-.timeline-item.active .timeline-dot { border-color: var(--accent); background: var(--accent); box-shadow: 0 0 10px rgba(168, 85, 247, .5); }
-.timeline-content {
-    width: 45%; background: var(--card-bg); border: 1px solid var(--border-color);
-    border-radius: 8px; padding: 25px; transition: .3s;
-}
-.timeline-content:hover { background: #100d17; transform: translateY(-5px); box-shadow: var(--glow); }
-.timeline-item.active .timeline-content { border-color: rgba(168, 85, 247, .4); }
-.job-title { font-size: 1.2rem; margin-bottom: 5px; }
-.job-date { color: var(--accent); font-size: .9rem; font-weight: 500; display: inline-block; margin-bottom: 14px; }
-.job-description { color: var(--text-secondary); font-size: .95rem; margin-bottom: 18px; }
-.job-topics { list-style: none; display: flex; flex-direction: column; gap: 10px; }
-.job-topics li { color: #c9d1d9; font-size: .9rem; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+/* ==========================================================
+   EXPERIÊNCIA · linha do tempo + galeria coverflow 3D
+   ========================================================== */
+.timeline { position: relative; padding-left: 44px; }
+.t-line { position: absolute; left: 6px; top: 6px; bottom: 6px; width: 1px; background: var(--line); }
+.t-line i { display: block; width: 100%; height: 0; background: linear-gradient(var(--accent), var(--accent-2)); box-shadow: 0 0 12px var(--accent); }
+.t-dot { position: absolute; left: -44px; top: 8px; width: 13px; height: 13px; border-radius: 50%; background: var(--bg); border: 1px solid var(--line-2); transition: .4s; }
+.t-item { position: relative; perspective: 1000px; }
+.t-item.active .t-dot { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 0 6px var(--accent-soft), 0 0 22px var(--accent); }
+.t-card { padding: 30px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); backdrop-filter: blur(6px); }
+.job-title { font-size: clamp(1.2rem, 2.4vw, 1.6rem); font-weight: 600; letter-spacing: -.02em; }
+.job-date { display: inline-block; margin: 6px 0 14px; font: 12px var(--mono); color: var(--accent-2); }
+.job-desc { color: #b9b9c4; max-width: 640px; margin-bottom: 18px; }
+.job-topics { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px 24px; font-size: 14px; color: var(--muted); }
+.job-topics .badge { margin-right: 8px; }
 
-/* ---------- Mobile ---------- */
-@media (max-width: 768px) {
-    .timeline-wrapper::before, .timeline-progress-line { left: 20px; transform: none; }
-    .timeline-dot { left: 20px; }
-    .timeline-item, .timeline-item:nth-child(odd) { justify-content: flex-end; }
-    .timeline-content { width: calc(100% - 50px); }
-}
+/* galeria coverflow 3D */
+.cf { margin-top: 56px; }
+.cf-stage { position: relative; height: clamp(250px, 40vw, 400px); perspective: 1500px; perspective-origin: 50% 45%; outline: none; overflow-x: clip; touch-action: pan-y; }
+.cf-item { position: absolute; left: 50%; top: 50%; width: min(64%, 520px); aspect-ratio: 4 / 3; margin: 0; overflow: hidden; border-radius: 14px; border: 1px solid var(--line-2); background: #0d0d14; cursor: pointer; transition: transform .85s cubic-bezier(.2, .8, .2, 1), opacity .6s, filter .6s, border-color .4s; box-shadow: 0 30px 70px rgba(0, 0, 0, .55); will-change: transform; user-select: none; }
+.cf-item img { width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
+.cf-item figcaption { position: absolute; left: 0; right: 0; bottom: 0; padding: 40px 18px 14px; font-size: 13px; color: #fff; background: linear-gradient(transparent, rgba(0, 0, 0, .8)); opacity: 0; transform: translateY(8px); transition: .5s; }
+.cf-item:not(.active) { filter: brightness(.45) saturate(.6); }
+.cf-item.active { border-color: rgba(168, 85, 247, .55); cursor: zoom-in; }
+.cf-item.active figcaption { opacity: 1; transform: none; }
+.cf-ctrl { display: flex; align-items: center; justify-content: center; gap: 18px; margin-top: 26px; font: 13px var(--mono); color: var(--muted); }
+.cf-count b { color: var(--fg); }
+.cf-btn { width: 40px; height: 40px; border-radius: 50%; background: transparent; border: 1px solid var(--line-2); transition: .25s; }
+.cf-btn:hover { border-color: var(--accent); color: var(--accent-2); }
+.cf-bar { width: min(220px, 60%); height: 2px; background: var(--line); margin: 16px auto 0; overflow: hidden; border-radius: 2px; }
+.cf-bar i { display: block; height: 100%; width: 100%; background: var(--accent); transform-origin: left; transform: scaleX(0); }
+.cf-bar i.run { animation: cfRun 5s linear forwards; }
+.cf.paused .cf-bar i { animation-play-state: paused; }
+@keyframes cfRun { to { transform: scaleX(1); } }
 
-/* ==========================================
-   GALERIA DE FOTOS (painéis expansíveis, estilo HUD)
-   Fica DENTRO do card, abaixo do texto. Só aparece com ao menos 1 foto válida.
-   ========================================== */
-.timeline-media { display: none; }
-.timeline-media.ready {
-    display: block; margin-top: 26px; padding-top: 22px;
-    border-top: 1px dashed var(--border-color);
-}
-
-.reel-strip {
-    display: flex; gap: 6px; height: 220px; outline: none;
-    touch-action: pan-y; cursor: pointer; user-select: none;
-}
-.reel-strip:focus-visible { outline: 2px solid var(--accent); outline-offset: 4px; border-radius: 8px; }
-
-.reel-item {
-    position: relative; flex: 1 1 0; min-width: 0; margin: 0; overflow: hidden;
-    border-radius: 8px; border: 1px solid var(--border-color); background: #010409;
-    transition: flex-grow .6s cubic-bezier(.2, .8, .2, 1), border-color .4s, box-shadow .4s;
-}
-.reel-item.active { flex-grow: 7; border-color: var(--accent); box-shadow: var(--glow); cursor: default; }
-.reel-item img {
-    position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block;
-    filter: grayscale(1) brightness(.45); transform: scale(1.08);
-    transition: filter .6s ease, transform .8s cubic-bezier(.2, .8, .2, 1);
-    pointer-events: none; -webkit-user-drag: none;
-}
-.reel-item:not(.active):hover img { filter: grayscale(.6) brightness(.7); }
-.reel-item.active img { filter: none; transform: none; }
-
-/* etiqueta IMG_01 (só no painel aberto) */
-.reel-item::before {
-    content: attr(data-idx); position: absolute; top: 12px; left: 14px; z-index: 2;
-    font: 600 .68rem/1 ui-monospace, "SF Mono", Consolas, monospace; letter-spacing: .08em;
-    color: #fff; background: rgba(1, 4, 9, .65); border: 1px solid rgba(168, 85, 247, .6);
-    padding: 4px 7px; border-radius: 4px; opacity: 0; transition: opacity .4s .2s;
-}
-.reel-item.active::before { opacity: 1; }
-
-/* cantos de mira */
-.reel-item::after {
-    content: ''; position: absolute; inset: 8px; z-index: 2; pointer-events: none;
-    opacity: 0; transition: opacity .4s .2s;
-    --c: linear-gradient(var(--accent), var(--accent));
-    background:
-        var(--c) top left / 14px 2px no-repeat, var(--c) top left / 2px 14px no-repeat,
-        var(--c) top right / 14px 2px no-repeat, var(--c) top right / 2px 14px no-repeat,
-        var(--c) bottom left / 14px 2px no-repeat, var(--c) bottom left / 2px 14px no-repeat,
-        var(--c) bottom right / 14px 2px no-repeat, var(--c) bottom right / 2px 14px no-repeat;
-}
-.reel-item.active::after { opacity: 1; }
-
-.reel-item figcaption {
-    position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; padding: 34px 20px 16px;
-    background: linear-gradient(to top, rgba(1, 4, 9, .92), rgba(1, 4, 9, 0));
-    color: var(--text-primary); font: 500 .8rem/1.3 ui-monospace, "SF Mono", Consolas, monospace;
-    opacity: 0; transform: translateY(8px); transition: opacity .4s .25s, transform .4s .25s;
-}
-.reel-item figcaption::before { content: '> '; color: var(--accent); }
-.reel-item.active figcaption { opacity: 1; transform: none; }
-
-/* barra de status */
-.reel-bar { display: flex; align-items: center; gap: 12px; margin-top: 14px; }
-.reel-counter { font: 500 .8rem/1 ui-monospace, "SF Mono", Consolas, monospace; color: var(--text-secondary); white-space: nowrap; }
-.reel-counter b { color: var(--accent); font-weight: 600; }
-.reel-progress { flex: 1; height: 2px; background: var(--border-color); border-radius: 2px; overflow: hidden; }
-.reel-progress span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #a855f7, #6366f1); }
-.reel-progress span.run { animation: reel-fill 5s linear forwards; }
-.reel.paused .reel-progress span { animation-play-state: paused; }
-@keyframes reel-fill { from { width: 0; } to { width: 100%; } }
-.reel-btn {
-    width: 28px; height: 28px; border-radius: 6px; display: grid; place-items: center;
-    background: transparent; color: var(--text-secondary); border: 1px solid var(--border-color);
-    cursor: pointer; transition: .2s;
-}
-.reel-btn:hover, .reel-btn:focus-visible { color: var(--accent); border-color: var(--accent); outline: none; }
-
-@media (max-width: 768px) {
-    .reel-strip { height: 190px; gap: 4px; }
-    .reel-item.active { flex-grow: 10; }
-    .reel-item figcaption { padding: 28px 14px 12px; font-size: .74rem; }
-}
-
-/* ==========================================
-   LIGHTBOX: foto da galeria em tela cheia
-   ========================================== */
-.lightbox {
-    position: fixed; inset: 0; z-index: 2000; padding: 40px;
-    display: flex; align-items: center; justify-content: center;
-    background: rgba(1, 4, 9, .82); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
-    opacity: 0; visibility: hidden; transition: opacity .25s ease, visibility 0s .25s;
-}
-.lightbox.open { opacity: 1; visibility: visible; transition: opacity .25s ease; }
-.lightbox-figure { max-width: min(90vw, 1100px); max-height: 88vh; margin: 0; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-.lightbox-img { max-width: 100%; max-height: 80vh; object-fit: contain; border-radius: 10px; border: 1px solid var(--border-color); box-shadow: 0 20px 60px rgba(0, 0, 0, .5); }
-.lightbox-caption { color: var(--text-secondary); font-size: .85rem; text-align: center; }
-.lightbox-caption[hidden] { display: none; }
-.lightbox-close {
-    position: fixed; top: 22px; left: 22px; z-index: 2001;
-    width: 42px; height: 42px; border-radius: 50%;
-    display: flex; align-items: center; justify-content: center; font-size: 18px;
-    background: var(--card-bg); border: 1px solid var(--border-color); color: var(--text-primary);
-    cursor: pointer; transition: border-color .2s, color .2s;
-}
-.lightbox-close:hover, .lightbox-close:focus-visible { color: var(--accent); border-color: var(--accent); outline: none; }
-body.lightbox-lock { overflow: hidden; }
-
-@media (max-width: 600px) {
-    .lightbox { padding: 20px; }
-    .lightbox-close { top: 14px; left: 14px; width: 38px; height: 38px; }
+@media (max-width: 560px) {
+    .timeline { padding-left: 30px; }
+    .t-dot { left: -30px; }
+    .t-card { padding: 22px; }
+    .cf-item { width: 78%; }
 }

@@ -1,142 +1,108 @@
 // ==========================================
-// CURSOS: puxados automaticamente da pasta img/certificados (API do GitHub)
+// CURSOS: certificados lidos sozinhos da pasta img/certificados/ do repositório
+// (basta subir a imagem no GitHub). Sem pasta/internet, cai na lista abaixo.
 // ==========================================
-// Como adicionar um curso: coloque a imagem (ou PDF) do certificado em
-//   img/certificados/  com o nome no formato:
-//   escola__nome-do-curso__AAAA-MM.jpg      ex.: alura__python-para-data-science__2026-03.jpg
-// Faça o push. O card aparece sozinho no site.
-//
-// Acentos e link do certificado (opcional): crie o arquivo certificados.json na raiz:
-//   { "alura__python-para-data-science__2026-03.jpg": { "nome": "Python para Data Science", "link": "https://..." } }
-//
-// Se a API falhar ou a pasta estiver vazia, usa a lista de exemplo abaixo.
-const cursosMock = [
-    { nome: "Data Science: Primeiros Passos", escola: "Alura", status: "Concluído", imagemCertificado: "", link: "" },
-    { nome: "Python para Data Science", escola: "Alura", status: "Concluído", imagemCertificado: "", link: "" },
-    { nome: "SQL com SQL Server", escola: "Alura", status: "Concluído", imagemCertificado: "", link: "" },
-    { nome: "MongoDB: Introdução ao NoSQL", escola: "Alura", status: "Concluído", imagemCertificado: "", link: "" },
-    { nome: "Data Science: Análise de Dados com Pandas", escola: "Alura", status: "Concluído", imagemCertificado: "", link: "" },
-    { nome: "Dashboard com Power BI", escola: "Alura", status: "Concluído", imagemCertificado: "", link: "" },
-    { nome: "Estatística com Python", escola: "Alura", status: "Concluído", imagemCertificado: "", link: "" },
-    { nome: "Machine Learning: Introdução", escola: "Alura", status: "Concluído", imagemCertificado: "", link: "" },
-    { nome: "Data Visualization: Gráficos de Impacto", escola: "Alura", status: "Concluído", imagemCertificado: "", link: "" },
-    { nome: "JavaScript: Programando na Web", escola: "Alura", status: "Concluído", imagemCertificado: "", link: "" },
-    { nome: "HTML5 e CSS3: Primeira página Web", escola: "Alura", status: "Concluído", imagemCertificado: "", link: "" }
-];
+(() => {
+    const USER = (typeof username !== 'undefined' && username) ? username : 'mateus-henriquee';
+    const REPO = (typeof PORTFOLIO_REPO !== 'undefined' && PORTFOLIO_REPO) ? PORTFOLIO_REPO : 'portfolio_mateus-henriquee';
+    const DIR = 'img/certificados';
+    const CACHE_KEY = 'certificados-v2', CACHE_MS = 10 * 60 * 1000;
+    const FIRST = 6, STEP = 3;
 
-let cursos = cursosMock;
-const aluraContainer = document.getElementById('alura-container');
+    // plano B (sem imagem de certificado)
+    const FALLBACK = [
+        'Data Science: Primeiros Passos', 'Python para Data Science', 'SQL com SQL Server', 'MongoDB: Introdução ao NoSQL',
+        'Data Science: Análise de Dados com Pandas', 'Dashboard com Power BI', 'Estatística com Python', 'Machine Learning: Introdução',
+        'Data Visualization: Gráficos de Impacto', 'JavaScript: Programando na Web', 'HTML5 e CSS3: Primeira página Web'
+    ].map(nome => ({ nome, escola: 'Alura', status: 'Concluído', imagem: '' }));
 
-// ---------- Leitura da pasta de certificados ----------
-const CERT_DIR = 'img/certificados';
-const CERT_IMG_EXT = ['jpg', 'jpeg', 'png', 'webp'];
-const CERT_CACHE_KEY = 'certificados-v1';
-const CERT_CACHE_MS = 10 * 60 * 1000; // poupa o limite de 60 chamadas/hora da API
-const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
-const MINUSCULAS = new Set(['de', 'da', 'do', 'das', 'dos', 'para', 'com', 'e', 'em', 'a', 'o', 'na', 'no', 'ao']);
-const SIGLAS = { sql: 'SQL', nosql: 'NoSQL', html: 'HTML', html5: 'HTML5', css: 'CSS', css3: 'CSS3', api: 'API', ia: 'IA', bi: 'BI', aws: 'AWS', json: 'JSON', etl: 'ETL', javascript: 'JavaScript', mongodb: 'MongoDB', oci: 'OCI', ux: 'UX', ui: 'UI' };
+    const container = document.getElementById('alura-container');
+    const moreBtn = document.getElementById('cursos-load-more');
+    const allBtn = document.getElementById('cursos-load-all');
+    if (!container) return;
 
-function titulo(slug) {
-    return slug.replace(/[-_]+/g, ' ').trim().split(/\s+/).map((w, i) => {
-        const k = w.toLowerCase();
-        if (SIGLAS[k]) return SIGLAS[k];
-        if (i > 0 && MINUSCULAS.has(k)) return k;
-        return k.charAt(0).toUpperCase() + k.slice(1);
-    }).join(' ');
-}
-
-function linkSeguro(url) { return /^https?:\/\//i.test(url || '') ? url : ''; }
-
-// Converte um arquivo da pasta em um curso: escola__nome-do-curso__AAAA-MM.ext
-function arquivoParaCurso(file, extra = {}) {
-    const dot = file.name.lastIndexOf('.');
-    const ext = file.name.slice(dot + 1).toLowerCase();
-    const parts = file.name.slice(0, dot).split('__');
-    const dataMatch = /^(\d{4})-(\d{2})$/.exec(parts[parts.length - 1] || '');
-    const data = dataMatch ? parts.pop() : '';
-    const escola = parts.length > 1 ? titulo(parts.shift()) : '';
-    const isImg = CERT_IMG_EXT.includes(ext);
-    const [ano, mes] = data.split('-');
-    return {
-        nome: extra.nome || titulo(parts.join(' ')),
-        escola: extra.escola || escola,
-        status: 'Concluído',
-        data: extra.data || data,
-        dataLabel: data ? `${MESES[+mes - 1] || ''}/${ano}` : '',
-        imagemCertificado: isImg ? file.download_url : '',
-        link: linkSeguro(extra.link) || file.download_url
+    let cursos = [], limit = FIRST;
+    const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+    const readCache = (ignoreAge) => {
+        try {
+            const c = JSON.parse(sessionStorage.getItem(CACHE_KEY) || 'null');
+            return c && (ignoreAge || Date.now() - c.t < CACHE_MS) ? c.data : null;
+        } catch { return null; }
     };
-}
 
-async function carregarCursos() {
-    try {
-        const cached = JSON.parse(sessionStorage.getItem(CERT_CACHE_KEY) || 'null');
-        if (cached && Date.now() - cached.t < CERT_CACHE_MS) return cached.cursos;
-    } catch (e) { /* sem cache */ }
-
-    const res = await fetch(`https://api.github.com/repos/${username}/${PORTFOLIO_REPO}/contents/${CERT_DIR}`);
-    if (!res.ok) throw new Error('API ' + res.status);
-    const files = (await res.json()).filter(f => f.type === 'file' && /\.(jpe?g|png|webp|pdf)$/i.test(f.name));
-
-    let extras = {};
-    try {
-        const r = await fetch('certificados.json');
-        if (r.ok) extras = await r.json();
-    } catch (e) { /* opcional */ }
-
-    const lista = files
-        .map(f => arquivoParaCurso(f, extras[f.name]))
-        .sort((a, b) => (b.data || '').localeCompare(a.data || '') || a.nome.localeCompare(b.nome, 'pt'));
-
-    try { sessionStorage.setItem(CERT_CACHE_KEY, JSON.stringify({ t: Date.now(), cursos: lista })); } catch (e) { /* ok */ }
-    return lista;
-}
-
-// ---------- Renderização ----------
-function renderCursos(limit = 6) {
-    if (!aluraContainer) return;
-    aluraContainer.innerHTML = '';
-
-    cursos.slice(0, limit).forEach(curso => {
-        const card = document.createElement('div');
-        card.className = 'repo-card' + (curso.link ? ' clickable' : '');
-        if (curso.link) card.onclick = () => window.open(curso.link, '_blank', 'noopener');
-
-        const preview = curso.imagemCertificado
-            ? `<div class="repo-preview"><img src="${esc(curso.imagemCertificado)}" alt="Certificado ${esc(curso.nome)}" class="preview-img" loading="lazy"></div>`
-            : `<div class="repo-preview"><i class="fa-solid fa-graduation-cap ph"></i><span class="ph-label">${esc(curso.escola || 'Certificado').toUpperCase()}</span></div>`;
-
-        const desc = curso.escola
-            ? `Capacitação realizada na plataforma ${esc(curso.escola)}.`
-            : 'Certificado de conclusão.';
-        const dataBadge = curso.dataLabel ? ` <span class="topic-badge">${esc(curso.dataLabel)}</span>` : '';
-
-        card.innerHTML = `
-            ${preview}
-            <div class="repo-body">
-                <h3 class="repo-title">${esc(curso.nome)}</h3>
-                <div><span class="topic-badge">${esc(curso.status)}</span>${dataBadge}</div>
-                <p class="repo-description">${desc}</p>
-            </div>`;
-        aluraContainer.appendChild(card);
-    });
-}
-
-function atualizarStatCursos() {
-    const stat = document.getElementById('stat-cursos');
-    if (stat) stat.textContent = cursos.filter(c => c.status === 'Concluído').length;
-}
-
-async function initCourses() {
-    atualizarStatCursos();
-    renderCursos(6);
-    try {
-        const lista = await carregarCursos();
-        if (!lista.length) return; // pasta vazia: mantém os exemplos
-        cursos = lista;
-        atualizarStatCursos();
-        renderCursos(6);
-    } catch (e) {
-        console.warn('Certificados: usando lista de exemplo.', e);
+    async function fetchCertificados() {
+        const res = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${DIR}`);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const files = await res.json();
+        return files
+            .filter(f => f.type === 'file' && /\.(png|jpe?g|webp|gif)$/i.test(f.name))
+            .sort((a, b) => a.name.localeCompare(b.name, 'pt-BR', { numeric: true }))
+            .map(f => ({
+                nome: f.name.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim(),
+                escola: 'Alura', status: 'Concluído',
+                imagem: `${DIR}/${encodeURIComponent(f.name)}`
+            }));
     }
-}
+
+    function card(c, i) {
+        const wrap = document.createElement('div');
+        wrap.className = 'card-wrap';
+        wrap.dataset.r3d = 'up';
+        wrap.dataset.delay = i % 3;
+        const preview = c.imagem
+            ? `<img src="${esc(c.imagem)}" alt="Certificado ${esc(c.nome)}" class="preview-img" loading="lazy">`
+            : `<div class="ph-stack"><i class="fa-solid fa-graduation-cap ph"></i><span class="ph-label">${esc(c.escola).toUpperCase()}</span></div>`;
+        wrap.innerHTML = `
+            <article class="repo-card" data-tilt ${c.imagem ? 'title="Ver certificado"' : ''}>
+                <div class="repo-preview">${preview}</div>
+                <div class="repo-body">
+                    <h3 class="repo-title">${esc(c.nome)}</h3>
+                    <div class="badges"><span class="badge">${esc(c.status)}</span></div>
+                    <p class="repo-description">Capacitação realizada na plataforma ${esc(c.escola)}.</p>
+                </div>
+            </article>`;
+        if (c.imagem) {
+            wrap.firstElementChild.addEventListener('click', () => Lightbox.open(c.imagem, `Certificado ${c.nome}`, c.nome));
+        }
+        return wrap;
+    }
+
+    const cardEls = new Map();
+    function render() {
+        const list = cursos.slice(0, limit);
+        container.replaceChildren(...list.map((c, i) => {
+            let el = cardEls.get(c.nome);
+            if (!el) { el = card(c, i); cardEls.set(c.nome, el); }
+            el.dataset.delay = i % 3;
+            return el;
+        }));
+        Motion.refresh();
+        const rest = cursos.length - list.length;
+        moreBtn.hidden = rest <= 0;
+        allBtn.hidden = rest <= STEP;
+        if (rest > 0) allBtn.textContent = `Ver todos (${cursos.length})`;
+    }
+
+    function show(list) {
+        cursos = list;
+        Motion.setStat('stat-cursos', list.filter(c => c.status === 'Concluído').length);
+        render();
+    }
+
+    moreBtn.addEventListener('click', () => { limit += STEP; render(); });
+    allBtn.addEventListener('click', () => { limit = Infinity; render(); });
+
+    (async () => {
+        const cached = readCache(false);
+        if (cached && cached.length) return show(cached);
+        try {
+            const list = await fetchCertificados();
+            if (!list.length) throw new Error('pasta vazia');
+            try { sessionStorage.setItem(CACHE_KEY, JSON.stringify({ t: Date.now(), data: list })); } catch { /* ok */ }
+            show(list);
+        } catch {
+            const stale = readCache(true);
+            show(stale && stale.length ? stale : FALLBACK);
+        }
+    })();
+})();

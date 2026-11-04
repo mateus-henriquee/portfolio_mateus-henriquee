@@ -1,16 +1,5 @@
 // ==========================================
-// MAIN: inicia todas as seções (carregado por último)
+// MAIN: liga tudo. Os módulos acima já se registraram; aqui só dá a partida.
 // ==========================================
-// A ordem importa: initSkills cria elementos .reveal,
-// então initReveal precisa rodar depois dela.
-initSmoothScroll();
-initHeader();
-initTimeline();
-initGallery();
-initSkills();
-initCourses();
-initResume();
-initReveal();
-initProjects();
-initDropdowns();
-initContact();
+Motion.init();
+Engine.start();

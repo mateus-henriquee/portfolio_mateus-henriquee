@@ -8,7 +8,11 @@
     <meta property="og:title" content="Mateus Henrique | Analista de Dados">
     <meta property="og:description" content="Transformo dados em decisões. Python, SQL, Power BI e Big Data.">
     <meta property="og:image" content="https://github.com/mateus-henriquee.png">
+    <meta name="theme-color" content="#050507">
     <link rel="icon" href="https://avatars.githubusercontent.com/u/99336388?v=4">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="css/root.css">
     <link rel="stylesheet" href="css/header.css">
@@ -17,10 +21,9 @@
     <link rel="stylesheet" href="css/skills.css">
     <link rel="stylesheet" href="css/projects.css">
     <link rel="stylesheet" href="css/cards.css">
-    <link rel="stylesheet" href="css/dropdown.css">
     <link rel="stylesheet" href="css/experience.css">
+    <link rel="stylesheet" href="css/lightbox.css">
     <link rel="stylesheet" href="css/education.css">
-    <link rel="stylesheet" href="css/courses.css">
     <link rel="stylesheet" href="css/resume.css">
     <link rel="stylesheet" href="css/contact.css">
     <link rel="stylesheet" href="css/toast.css">
@@ -28,7 +31,11 @@
 </head>
 <body>
 
-    <header class="main-header">
+    <!-- Fundo 3D: superfície de dados desenhada em canvas, reage ao scroll -->
+    <canvas id="bg-canvas" aria-hidden="true"></canvas>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <header class="nav-bar">
         <nav class="nav">
             <a href="#inicio" class="brand">MH<span>.</span></a>
             <button class="nav-toggle" id="navToggle" aria-label="Abrir menu" aria-expanded="false">
@@ -46,221 +53,227 @@
                 <a href="#contato">Contato</a>
             </div>
         </nav>
-        <div class="progress-container"><div class="progress-bar" id="scrollBar"></div></div>
+        <div class="progress"><i id="scrollBar"></i></div>
     </header>
+
+    <main>
 
     <!-- HERO -->
     <section id="inicio" class="hero">
-        <div class="container hero-grid">
+        <div class="hero-inner container" id="hero-inner">
             <div class="hero-text">
-                <span class="hero-tag"><i class="fa-solid fa-circle"></i> Aberto a estágio em Dados</span>
-                <h1>Mateus Henrique<br><span class="gradient-text">Leccese da Silva</span></h1>
+                <span class="tag"><i class="dot"></i> Aberto a estágio em Dados</span>
+                <h1 class="hero-name" aria-label="Mateus Henrique Leccese da Silva">
+                    <span class="line" aria-hidden="true"><span class="split">Mateus Henrique</span></span>
+                    <span class="line accent" aria-hidden="true"><span class="split">Leccese da Silva</span></span>
+                </h1>
                 <p class="subtitle">Analista de Dados em formação</p>
-                <p class="hero-lead">Transformo dados brutos em decisões claras. Trabalho com <strong>Python</strong>, <strong>SQL / NoSQL</strong>, <strong>Power BI</strong> e <strong>Databricks</strong>.</p>
-                <div class="hero-actions">
-                    <a href="#projetos" class="btn btn-primary"><i class="fa-solid fa-chart-column"></i> Ver projetos</a>
-                    <a href="#contato" class="btn btn-ghost"><i class="fa-solid fa-envelope"></i> Falar comigo</a>
-                    <a href="https://www.linkedin.com/in/devmateus-henriquee" target="_blank" rel="noopener" class="btn btn-icon" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-                    <a href="https://github.com/mateus-henriquee" target="_blank" rel="noopener" class="btn btn-icon" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+                <p class="lead">Transformo dados brutos em decisões claras. Trabalho com <strong>Python</strong>, <strong>SQL / NoSQL</strong>, <strong>Power BI</strong> e <strong>Databricks</strong>.</p>
+                <div class="actions">
+                    <a href="#projetos" class="btn btn-primary" data-magnetic><i class="fa-solid fa-chart-column"></i> Ver projetos</a>
+                    <a href="#contato" class="btn" data-magnetic><i class="fa-solid fa-envelope"></i> Falar comigo</a>
+                    <a href="https://www.linkedin.com/in/devmateus-henriquee" target="_blank" rel="noopener" class="btn btn-icon" aria-label="LinkedIn" data-magnetic><i class="fa-brands fa-linkedin-in"></i></a>
+                    <a href="https://github.com/mateus-henriquee" target="_blank" rel="noopener" class="btn btn-icon" aria-label="GitHub" data-magnetic><i class="fa-brands fa-github"></i></a>
                 </div>
             </div>
-            <div class="hero-photo">
-                <div class="profile-img-container">
+
+            <div class="hero-photo" id="hero-photo">
+                <div class="orbit" id="orbit" aria-hidden="true">
+                    <span class="orbit-chip"><i class="fa-brands fa-python"></i> Python</span>
+                    <span class="orbit-chip"><i class="fa-solid fa-database"></i> SQL / NoSQL</span>
+                    <span class="orbit-chip"><i class="fa-solid fa-chart-column"></i> Power BI</span>
+                    <span class="orbit-chip"><i class="fa-solid fa-layer-group"></i> Databricks</span>
+                    <span class="orbit-chip"><i class="fa-solid fa-layer-group"></i>Análise de dados</span>
+                </div>
+                <div class="photo-frame" id="photo-frame">
                     <img src="https://github.com/mateus-henriquee.png" alt="Foto de Mateus Henrique">
                 </div>
-                <div class="float-chip chip-1"><i class="fa-brands fa-python"></i> Python</div>
-                <div class="float-chip chip-2"><i class="fa-solid fa-database"></i> SQL / NoSQL</div>
-                <div class="float-chip chip-3"><i class="fa-solid fa-chart-column"></i> Power BI</div>
             </div>
         </div>
+
         <div class="container">
-            <div class="stats">
+            <div class="stats" data-r3d="up">
                 <div class="stat"><strong id="stat-repos">–</strong><span>Repositórios</span></div>
                 <div class="stat"><strong id="stat-cursos">–</strong><span>Cursos concluídos</span></div>
                 <div class="stat"><strong id="stat-techs">–</strong><span>Tecnologias</span></div>
-                <div class="stat"><strong>FIAP</strong><span>Data Science 2026–2027</span></div>
+                <div class="stat"><strong class="static">FIAP</strong><span>Data Science 2026–2027</span></div>
             </div>
         </div>
+        <a href="#sobre" class="scroll-hint" aria-label="Rolar para baixo"><span>scroll</span><i></i></a>
     </section>
 
+    <!-- FAIXA 3D -->
+    <div class="marquee" id="marquee" aria-hidden="true">
+        <div class="marquee-tilt">
+            <div class="marquee-row" data-dir="-1"></div>
+            <div class="marquee-row fill" data-dir="1"></div>
+        </div>
+    </div>
+
     <!-- SOBRE -->
-    <section id="sobre" class="section-padding bg-darker">
+    <section id="sobre" class="section">
         <div class="container">
-            <h2 class="section-title">Sobre mim</h2>
-            <div class="about-grid reveal">
-                <div class="about-text">
+            <div class="head" data-r3d="flip"><span class="eyebrow">01 — Sobre</span><h2 class="title">Sobre mim</h2></div>
+            <div class="about-grid">
+                <div class="about-text" id="about-text">
                     <p>Tenho 18 anos e estudo Data Science na FIAP. Vim do ensino técnico em Informática, então programo e entendo de infraestrutura.</p>
                     <p>Hoje foco em todo o ciclo de dados: coletar, limpar, modelar, analisar e comunicar. Gosto de dashboards que qualquer pessoa entende.</p>
                     <p>Na monitoria de T.I. da FIAP aprendi a ouvir o problema antes de propor a solução. Levo isso para a análise de dados.</p>
                 </div>
                 <div class="about-cards">
-                    <div class="mini-card"><i class="fa-solid fa-magnifying-glass-chart"></i><h3>Análise</h3><p>Exploração e estatística com Python.</p></div>
-                    <div class="mini-card"><i class="fa-solid fa-database"></i><h3>Dados</h3><p>Consultas SQL e NoSQL.</p></div>
-                    <div class="mini-card"><i class="fa-solid fa-chart-pie"></i><h3>Visualização</h3><p>Dashboards no Power BI.</p></div>
-                    <div class="mini-card"><i class="fa-solid fa-layer-group"></i><h3>Big Data</h3><p>Spark no Databricks.</p></div>
+                    <div data-r3d="right" data-delay="0"><div class="mini" data-tilt><i class="fa-solid fa-magnifying-glass-chart"></i><h3>Análise</h3><p>Exploração e estatística com Python.</p></div></div>
+                    <div data-r3d="right" data-delay="1"><div class="mini" data-tilt><i class="fa-solid fa-database"></i><h3>Dados</h3><p>Consultas SQL e NoSQL.</p></div></div>
+                    <div data-r3d="right" data-delay="2"><div class="mini" data-tilt><i class="fa-solid fa-chart-pie"></i><h3>Visualização</h3><p>Dashboards no Power BI.</p></div></div>
+                    <div data-r3d="right" data-delay="3"><div class="mini" data-tilt><i class="fa-solid fa-layer-group"></i><h3>Big Data</h3><p>Spark no Databricks.</p></div></div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- SKILLS -->
-    <section id="skills" class="section-padding">
-        <div class="container">
-            <h2 class="section-title">Habilidades</h2>
-            <div id="skills-container"></div>
+    <!-- SKILLS: palco fixo, anel 3D gira com o scroll -->
+    <section id="skills" class="skills-pin">
+        <div class="pin-sticky">
+            <div class="container">
+                <div class="head"><span class="eyebrow">02 — Skills</span><h2 class="title">Habilidades</h2></div>
+            </div>
+            <div class="ring-stage">
+                <div class="ring" id="skill-ring"></div>
+            </div>
+            <div class="ring-meta container">
+                <div class="ring-title"><b id="ring-index">01</b><span>/ 04</span> <em id="ring-title"></em></div>
+                <div class="ring-dots" id="ring-dots"></div>
+                <p class="ring-hint"><i class="fa-solid fa-arrows-up-down"></i> Role para girar · clique numa skill para ver os projetos dela</p>
+            </div>
         </div>
     </section>
 
     <!-- PROJETOS -->
-    <section id="projetos" class="section-padding bg-darker">
+    <section id="projetos" class="section band">
         <div class="container">
-            <h2 class="section-title">Projetos</h2>
+            <div class="head" data-r3d="flip"><span class="eyebrow">03 — Projetos</span><h2 class="title">Projetos</h2></div>
+            <p class="lead-muted">Repositórios reais do meu GitHub. Filtre por linguagem, por assunto ou busque por nome.</p>
 
             <div class="toolbar">
                 <input type="search" id="repo-search" placeholder="Buscar projeto..." aria-label="Buscar projeto">
                 <div class="chips" id="repo-filters"></div>
-                <div class="dropdown">
-                    <button class="dropdown-button" id="dropdown-btn">Exibir: 6 ▾</button>
-                    <div class="dropdown-content" id="dropdown-menu">
-                        <button data-value="6">6 Projetos</button>
-                        <button data-value="12">12 Projetos</button>
-                        <button data-value="all">Todos</button>
-                    </div>
-                </div>
             </div>
             <div class="chips topics-row" id="repo-topics" hidden></div>
-            <div id="repos-container" class="repos-grid">
+
+            <div id="repos-container" class="grid">
                 <p class="loading">Buscando repositórios...</p>
             </div>
-            <div class="repos-more">
-                <button type="button" id="repos-load-more" class="btn btn-ghost" hidden>Ver mais projetos</button>
+            <div class="more-row">
+                <button type="button" id="repos-load-more" class="btn" hidden>Ver mais projetos</button>
+                <button type="button" id="repos-load-all" class="btn btn-quiet" hidden>Ver todos</button>
             </div>
         </div>
     </section>
 
     <!-- EXPERIÊNCIA -->
-    <section id="experiencia" class="section-padding">
+    <section id="experiencia" class="section">
         <div class="container">
-            <h2 class="section-title">Experiência profissional</h2>
-            <div class="timeline-wrapper">
-                <div class="timeline-progress-line"></div>
+            <div class="head" data-r3d="flip"><span class="eyebrow">04 — Experiência</span><h2 class="title">Experiência profissional</h2></div>
 
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-content">
-                        <h3 class="job-title">Estágio de T.I. – Monitoria <a href="https://www.fiap.com.br" target="_blank" rel="noopener" class="link-accent">(FIAP)</a></h3>
+            <div class="timeline" id="timeline">
+                <div class="t-line"><i id="t-fill"></i></div>
+                <div class="t-item" data-r3d="left">
+                    <span class="t-dot"></span>
+                    <div class="t-card">
+                        <h3 class="job-title">Estágio de T.I. – Monitoria <a href="https://www.fiap.com.br" target="_blank" rel="noopener" class="link">(FIAP)</a></h3>
                         <span class="job-date">2024 – 2026</span>
-                        <p class="job-description">Suporte técnico em hardware, audiovisual e atendimento. De problemas de login a switches de rede em laboratórios.</p>
+                        <p class="job-desc">Suporte técnico em hardware, audiovisual e atendimento. De problemas de login a switches de rede em laboratórios.</p>
                         <ul class="job-topics">
-                            <li><span class="topic-badge">Atendimento</span> Resolução de problemas de alunos.</li>
-                            <li><span class="topic-badge">Comunicação</span> Entender a dor e explicar a solução.</li>
-                            <li><span class="topic-badge">Hardware</span> Diagnóstico e conserto de máquinas.</li>
-                            <li><span class="topic-badge">Redes</span> Configuração de switches em laboratórios.</li>
+                            <li><span class="badge">Atendimento</span> Resolução de problemas de alunos.</li>
+                            <li><span class="badge">Comunicação</span> Entender a dor e explicar a solução.</li>
+                            <li><span class="badge">Hardware</span> Diagnóstico e conserto de máquinas.</li>
+                            <li><span class="badge">Redes</span> Configuração de switches em laboratórios.</li>
                         </ul>
-
-                        <!-- Fotos desta experiência (ficam dentro do card, abaixo do texto).
-                             Coloque as imagens em img/experiencies/fiap/. Cada <figure> é uma foto.
-                             Sem fotos válidas, este bloco some sozinho. -->
-                        <div class="timeline-media" data-gallery aria-label="Fotos da experiência na FIAP">
-                            <figure><img src="img/experiencies/fiap/img1.jpeg" alt="Time da monitoria da FIAP Lins reunido"><figcaption>Time monitoria FIAP Lins</figcaption></figure>
-                            <figure><img src="img/experiencies/fiap/img2.jpeg" alt="Último dia na monitoria"><figcaption>Último dia</figcaption></figure>
-                            <figure><img src="img/experiencies/fiap/img3.jpeg" alt="Apresentação de evento escolar em Santos"><figcaption>Evento escolar em Santos</figcaption></figure>
-                            <figure><img src="img/experiencies/fiap/img4.jpeg" alt="Troca de equipamentos em laboratório"><figcaption>Trocando equipamentos</figcaption></figure>
-                            <figure><img src="img/experiencies/fiap/img5.jpeg" alt="Time da monitoria da FIAP Paulista"><figcaption>Time monitoria FIAP Paulista</figcaption></figure>
-                        </div>
                     </div>
                 </div>
+            </div>
+
+            <!-- Fotos (img/experiencies/fiap/). Cada <figure> é uma foto. Sem fotos válidas, o bloco some sozinho. -->
+            <div class="cf" data-gallery aria-label="Fotos da experiência na FIAP" data-r3d="up">
+                <figure><img src="img/experiencies/fiap/img1.jpeg" alt="Time da monitoria da FIAP Lins reunido"><figcaption>Time monitoria FIAP Lins</figcaption></figure>
+                <figure><img src="img/experiencies/fiap/img2.jpeg" alt="Último dia na monitoria"><figcaption>Último dia</figcaption></figure>
+                <figure><img src="img/experiencies/fiap/img3.jpeg" alt="Apresentação de evento escolar em Santos"><figcaption>Evento escolar em Santos</figcaption></figure>
+                <figure><img src="img/experiencies/fiap/img4.jpeg" alt="Troca de equipamentos em laboratório"><figcaption>Trocando equipamentos</figcaption></figure>
+                <figure><img src="img/experiencies/fiap/img5.jpeg" alt="Time da monitoria da FIAP Paulista"><figcaption>Time monitoria FIAP Paulista</figcaption></figure>
             </div>
         </div>
     </section>
 
-    <!-- FORMAÇÕES -->
-    <section id="formacoes" class="section-padding bg-darker">
+    <!-- FORMAÇÃO: cards empilham em 3D -->
+    <section id="formacoes" class="section band">
         <div class="container">
-            <h2 class="section-title">Formação</h2>
+            <div class="head" data-r3d="flip"><span class="eyebrow">05 — Formação</span><h2 class="title">Formação</h2></div>
 
-            <div class="education-card reveal">
-                <div class="edu-icon"><i class="fa-solid fa-graduation-cap"></i></div>
-                <div class="edu-info">
-                    <span class="status-badge">Em andamento</span>
-                    <h3>Tecnólogo em Data Science – FIAP</h3>
-                    <p class="edu-date">Fev 2026 – Dez 2027</p>
-                    <div class="repo-topics">
-                        <span class="topic-badge">Python</span>
-                        <span class="topic-badge">SQL Oracle</span>
-                        <span class="topic-badge">MongoDB</span>
-                        <span class="topic-badge">Docker</span>
-                        <span class="topic-badge">Databricks</span>
-                        <span class="topic-badge">Google Colab</span>
-                        <span class="topic-badge">Power BI</span>
+            <div class="edu-stack" id="edu-stack">
+                <article class="edu-card">
+                    <div class="edu-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                    <div class="edu-info">
+                        <span class="status">Em andamento</span>
+                        <h3>Tecnólogo em Data Science – FIAP</h3>
+                        <p class="edu-date">Fev 2026 – Dez 2027</p>
+                        <div class="badges">
+                            <span class="badge">Python</span><span class="badge">SQL Oracle</span><span class="badge">MongoDB</span><span class="badge">Docker</span><span class="badge">Databricks</span><span class="badge">Google Colab</span><span class="badge">Power BI</span>
+                        </div>
+                        <p class="edu-desc">Ciclo completo de dados com visão estratégica: extração de insights, modelos preditivos e visualizações interativas. Machine Learning, Big Data, Business Intelligence e IA, com teoria e prática.</p>
                     </div>
-                    <p class="edu-desc">Ciclo completo de dados com visão estratégica: extração de insights, modelos preditivos e visualizações interativas. Machine Learning, Big Data, Business Intelligence e IA, com teoria e prática.</p>
-                </div>
-            </div>
+                </article>
 
-            <div class="education-card reveal">
-                <div class="edu-icon"><i class="fa-solid fa-laptop-code"></i></div>
-                <div class="edu-info">
-                    <span class="status-badge done">Concluído</span>
-                    <h3>Ensino Médio Técnico em Informática</h3>
-                    <p class="edu-date">Fev 2023 – Dez 2025</p>
-                    <div class="repo-topics">
-                        <span class="topic-badge">HTML</span>
-                        <span class="topic-badge">CSS</span>
-                        <span class="topic-badge">JavaScript</span>
-                        <span class="topic-badge">Node.js</span>
-                        <span class="topic-badge">SQL Server</span>
-                        <span class="topic-badge">MongoDB</span>
-                        <span class="topic-badge">Figma</span>
+                <article class="edu-card">
+                    <div class="edu-icon"><i class="fa-solid fa-laptop-code"></i></div>
+                    <div class="edu-info">
+                        <span class="status done">Concluído</span>
+                        <h3>Ensino Médio Técnico em Informática</h3>
+                        <p class="edu-date">Fev 2023 – Dez 2025</p>
+                        <div class="badges">
+                            <span class="badge">HTML</span><span class="badge">CSS</span><span class="badge">JavaScript</span><span class="badge">Node.js</span><span class="badge">SQL Server</span><span class="badge">MongoDB</span><span class="badge">Figma</span>
+                        </div>
+                        <p class="edu-desc">Base em desenvolvimento de software, bancos de dados, manutenção de computadores e fundamentos de T.I.</p>
                     </div>
-                    <p class="edu-desc">Base em desenvolvimento de software, bancos de dados, manutenção de computadores e fundamentos de T.I.</p>
-                </div>
+                </article>
             </div>
         </div>
     </section>
 
     <!-- CURSOS -->
-    <section id="cursos" class="section-padding">
+    <section id="cursos" class="section">
         <div class="container">
-            <header class="portfolio-header">
-                <h2 class="section-title" style="margin:0">Cursos realizados</h2>
-                <div class="dropdown">
-                    <button class="dropdown-button" id="dropdown-btn-cursos">Exibir: 6 ▾</button>
-                    <div class="dropdown-content" id="dropdown-menu-cursos">
-                        <button data-value="6">6 Cursos</button>
-                        <button data-value="10">10 Cursos</button>
-                        <button data-value="all">Todos</button>
-                    </div>
-                </div>
-            </header>
-            <div id="alura-container" class="repos-grid"></div>
+            <div class="head" data-r3d="flip"><span class="eyebrow">06 — Cursos</span><h2 class="title">Cursos realizados</h2></div>
+            <div id="alura-container" class="grid"></div>
+            <div class="more-row">
+                <button type="button" id="cursos-load-more" class="btn" hidden>Ver mais cursos</button>
+                <button type="button" id="cursos-load-all" class="btn btn-quiet" hidden>Ver todos</button>
+            </div>
         </div>
     </section>
 
     <!-- CURRÍCULO (Google Docs: qualquer alteração no documento aparece aqui) -->
-    <section id="curriculo" class="section-padding">
+    <section id="curriculo" class="section band">
         <div class="container">
-            <header class="portfolio-header">
-                <h2 class="section-title" style="margin:0">Currículo</h2>
+            <div class="head-row">
+                <div class="head" data-r3d="flip"><span class="eyebrow">07 — Currículo</span><h2 class="title">Currículo</h2></div>
                 <div class="resume-actions">
                     <a id="resume-download" class="btn btn-primary" href="#" target="_blank" rel="noopener"><i class="fa-solid fa-download"></i> Baixar CV</a>
-                    <a class="btn btn-ghost" href="https://www.linkedin.com/in/devmateus-henriquee" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin-in"></i> Conectar no LinkedIn</a>
+                    <a class="btn" href="https://www.linkedin.com/in/devmateus-henriquee" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin-in"></i> Conectar no LinkedIn</a>
                 </div>
-            </header>
-            <div class="resume-frame" id="resume-frame">
+            </div>
+            <div class="resume-frame" id="resume-frame" data-r3d="up">
                 <div class="resume-loading"><i class="fa-solid fa-file-lines"></i> Carregando currículo...</div>
                 <iframe id="resume-embed" title="Currículo de Mateus Henrique Leccese da Silva" loading="lazy" referrerpolicy="no-referrer"></iframe>
             </div>
-            <p class="resume-note">Meu currículo. <a id="resume-open" href="#" target="_blank" rel="noopener">Abrir em tela cheia <i class="fa-solid fa-arrow-up-right-from-square"></i></a></p>
+            <p class="resume-note">Meu currículo. <a id="resume-open" class="link" href="#" target="_blank" rel="noopener">Abrir em tela cheia <i class="fa-solid fa-arrow-up-right-from-square"></i></a></p>
         </div>
     </section>
 
     <!-- CONTATO -->
-    <section id="contato" class="section-padding bg-darker">
+    <section id="contato" class="section">
         <div class="container">
-            <h2 class="section-title">Vamos conversar?</h2>
+            <div class="head" data-r3d="flip"><span class="eyebrow">08 — Contato</span><h2 class="title">Vamos conversar?</h2></div>
             <div class="contact-grid">
-                <div class="contact-info">
+                <div class="contact-info" data-r3d="left">
                     <p>Procuro uma oportunidade de estágio em Dados. Me chame por qualquer canal.</p>
                     <ul>
                         <li><i class="fa-solid fa-envelope"></i> <a href="mailto:mateush.leccese@gmail.com">mateush.leccese@gmail.com</a></li>
@@ -269,32 +282,32 @@
                     </ul>
                 </div>
 
-                <form id="contact-form">
-                    <div class="input-group">
+                <form id="contact-form" data-r3d="right">
+                    <div class="field">
                         <label for="nome">Nome</label>
                         <input type="text" id="nome" name="nome" autocomplete="name" required>
                     </div>
-                    <div class="input-group">
+                    <div class="field">
                         <label for="email">E-mail</label>
                         <input type="email" id="email" name="email" list="email-suggestions" autocomplete="email" required>
                         <datalist id="email-suggestions"></datalist>
                     </div>
-                    <div class="input-group">
+                    <div class="field">
                         <label for="telefone">Telefone</label>
                         <input type="tel" id="telefone" name="telefone" maxlength="15" placeholder="(XX) XXXXX-XXXX" required>
                     </div>
-                    <div class="input-group">
+                    <div class="field">
                         <label for="mensagem">Mensagem</label>
-                        <textarea id="mensagem" name="mensagem" required></textarea>
+                        <textarea id="mensagem" name="mensagem" rows="4" required></textarea>
                     </div>
                     <div class="form-actions">
-                        <button type="button" id="btn-attach" class="btn-attach" aria-label="Anexar arquivo" title="Anexar arquivo">
-                            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <button type="button" id="btn-attach" class="btn btn-icon" aria-label="Anexar arquivo" title="Anexar arquivo">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                                 <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/>
                             </svg>
                         </button>
                         <input type="file" id="anexo" name="anexo" accept=".pdf,.png,.jpg,.jpeg,.doc,.docx" hidden>
-                        <button type="submit" id="btn-enviar">Enviar mensagem</button>
+                        <button type="submit" id="btn-enviar" class="btn btn-primary">Enviar mensagem</button>
                     </div>
                     <div class="file-chip" id="file-chip" hidden>
                         <span class="file-name" id="file-name"></span>
@@ -306,79 +319,52 @@
         </div>
     </section>
 
+    </main>
+
     <div id="toast-notification" class="toast" role="status">
-        <div class="toast-content">
-            <span class="toast-icon">✨</span>
-            <span class="toast-message">Mensagem enviada! Responderei em breve.</span>
-        </div>
-        <div class="toast-progress"></div>
+        <span class="toast-message">Mensagem enviada! Responderei em breve.</span>
     </div>
 
-    <footer class="main-footer">
-        <div class="footer-container">
-            <div class="footer-brand-section">
-                <div class="footer-profile">
-                    <img src="https://github.com/mateus-henriquee.png" alt="Mateus Henrique Leccese" class="footer-avatar">
-                    <div class="footer-brand-info">
-                        <span class="footer-name">Mateus Henrique</span>
-                        <span class="footer-title">Analista de Dados</span>
-                    </div>
-                </div>
-                <div class="footer-socials">
-                    <h4>Social</h4>
-                    <div class="social-icons-grid">
-                        <a href="https://github.com/mateus-henriquee" target="_blank" rel="noopener" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
-                        <a href="https://www.linkedin.com/in/devmateus-henriquee" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
-                        <a href="https://www.instagram.com/mat.hlc" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
-                        <a href="https://x.com/leccesemat" target="_blank" rel="noopener" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
-                    </div>
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-brand">
+                <img src="https://github.com/mateus-henriquee.png" alt="Mateus Henrique Leccese" class="footer-avatar">
+                <div>
+                    <strong>Mateus Henrique</strong>
+                    <span>Analista de Dados</span>
                 </div>
             </div>
-            <div class="footer-links-grid">
-                <div class="footer-column">
-                    <h3>Navegação</h3>
-                    <ul>
-                        <li><a href="#inicio">Início</a></li>
-                        <li><a href="#skills">Habilidades</a></li>
-                        <li><a href="#projetos">Projetos</a></li>
-                        <li><a href="#cursos">Cursos</a></li>
-                        <li><a href="#curriculo">Currículo</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Projetos</h3>
-                    <ul>
-                        <li><a href="https://github.com/mateus-henriquee?tab=repositories" target="_blank" rel="noopener">Todos os repositórios</a></li>
-                    </ul>
-                </div>
-                <div class="footer-column">
-                    <h3>Contato</h3>
-                    <ul>
-                        <li><a href="#contato">Formulário</a></li>
-                        <li><a href="mailto:mateush.leccese@gmail.com">E-mail direto</a></li>
-                    </ul>
-                </div>
+            <nav class="footer-nav" aria-label="Rodapé">
+                <a href="#inicio">Início</a>
+                <a href="#skills">Habilidades</a>
+                <a href="#projetos">Projetos</a>
+                <a href="#cursos">Cursos</a>
+                <a href="#curriculo">Currículo</a>
+                <a href="#contato">Contato</a>
+            </nav>
+            <div class="footer-social">
+                <a href="https://github.com/mateus-henriquee" target="_blank" rel="noopener" aria-label="GitHub"><i class="fa-brands fa-github"></i></a>
+                <a href="https://www.linkedin.com/in/devmateus-henriquee" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="fa-brands fa-linkedin-in"></i></a>
+                <a href="https://www.instagram.com/mat.hlc" target="_blank" rel="noopener" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a>
+                <a href="https://x.com/leccesemat" target="_blank" rel="noopener" aria-label="X"><i class="fa-brands fa-x-twitter"></i></a>
+                <a href="mailto:mateush.leccese@gmail.com" aria-label="E-mail"><i class="fa-solid fa-envelope"></i></a>
             </div>
         </div>
-        <div class="footer-bottom">
+        <div class="container footer-bottom">
             <p>&copy; 2026 Mateus Henrique Leccese.</p>
         </div>
     </footer>
 
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/lenis@1/dist/lenis.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script src="js/config.js"></script>
-    <script src="js/smoothscroll.js"></script>
-    <script src="js/header.js"></script>
-    <script src="js/timeline.js"></script>
-    <script src="js/gallery.js"></script>
+    <script src="js/engine.js"></script>
+    <script src="js/background.js"></script>
+    <script src="js/motion.js"></script>
     <script src="js/skills.js"></script>
     <script src="js/projects.js"></script>
+    <script src="js/experience.js"></script>
     <script src="js/courses.js"></script>
-    <script src="js/resume.js"></script>
-    <script src="js/dropdown.js"></script>
     <script src="js/contact.js"></script>
-    <script src="js/reveal.js"></script>
     <script src="js/main.js"></script>
 </body>
 </html>

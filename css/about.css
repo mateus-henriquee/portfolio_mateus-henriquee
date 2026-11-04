@@ -1,21 +1,24 @@
-/* ==========================================
-   SOBRE
-   ========================================== */
-.section-title + .about-grid { margin-top: 40px; }
+/* ==========================================================
+   SOBRE · texto que acende palavra por palavra + cards
+   ========================================================== */
+.about-grid { display: grid; grid-template-columns: 1.25fr 1fr; gap: clamp(32px, 6vw, 80px); align-items: start; }
+.about-text p { font-size: clamp(1.15rem, 2.1vw, 1.55rem); line-height: 1.5; letter-spacing: -.012em; margin-bottom: 1em; }
+.about-text .w { opacity: .2; transition: opacity .4s; }
+.about-text .w.on { opacity: 1; }
+.about-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; perspective: 1000px; }
+.mini { height: 100%; padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); transition: border-color .3s, transform .25s ease-out; will-change: transform; }
+.mini:hover { border-color: var(--accent); }
+.mini i { color: var(--accent); font-size: 1.3rem; margin-bottom: 18px; display: block; }
+.mini h3 { font-size: 1rem; font-weight: 600; margin-bottom: 4px; }
+.mini p { color: var(--muted); font-size: 13.5px; line-height: 1.5; }
 
-.about-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 40px; align-items: center; }
-.about-text p { color: #c9d1d9; margin-bottom: 16px; }
-.about-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-.mini-card {
-    background: var(--card-bg); border: 1px solid var(--border-color);
-    border-radius: 10px; padding: 18px; transition: .2s;
-}
-.mini-card:hover { border-color: var(--accent); transform: translateY(-4px); }
-.mini-card i { color: var(--accent); font-size: 1.5rem; margin-bottom: 10px; }
-.mini-card h3 { font-size: 1rem; margin-bottom: 4px; }
-.mini-card p { color: var(--text-secondary); font-size: 13px; }
-
-/* ---------- Responsivo ---------- */
 @media (max-width: 900px) {
     .about-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 560px) {
+    .about-cards { grid-template-columns: 1fr; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .about-text .w { opacity: 1; }
 }

@@ -1,41 +1,27 @@
-/* ==========================================
-   HEADER: navegação e barra de progresso
-   ========================================== */
-.main-header {
-    position: fixed; top: 0; width: 100%;
-    /* vidro preto: translúcido + desfoque do conteúdo que passa por trás */
-    background: rgba(0, 0, 0, .45);
-    -webkit-backdrop-filter: blur(16px) saturate(160%);
-    backdrop-filter: blur(16px) saturate(160%);
-    z-index: 1000;
-    border-bottom: 1px solid rgba(255, 255, 255, .08);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, .35);
+/* ==========================================================
+   HEADER · navegação fixa, menu mobile e barra de progresso
+   ========================================================== */
+/* ---------- Navegação ---------- */
+.nav-bar {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100; height: var(--nav-h);
+    background: rgba(5, 5, 7, .55); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--line);
 }
-/* navegador sem suporte a blur: volta ao preto quase sólido */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .main-header { background: rgba(0, 0, 0, .92); }
-}
-.nav {
-    max-width: 1100px; margin: 0 auto; padding: 0 20px;
-    height: 56px; display: flex; align-items: center; justify-content: space-between;
-}
-.brand { font-size: 1.4rem; font-weight: 800; }
+.nav { width: min(1120px, 100% - 48px); height: 100%; margin-inline: auto; display: flex; align-items: center; justify-content: space-between; }
+.brand { font: 600 1.25rem var(--mono); letter-spacing: -.04em; }
 .brand span { color: var(--accent); }
-.nav-links { display: flex; gap: 22px; }
-.nav-links a { color: var(--text-secondary); font-size: 15px; font-weight: 500; transition: color .2s; }
-.nav-links a:hover, .nav-links a.active { color: var(--accent); }
-.nav-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.4rem; cursor: pointer; }
-.progress-container { height: 3px; }
-.progress-bar { height: 3px; width: 0; background: linear-gradient(to right, var(--accent-dark), var(--accent)); }
+.nav-links { display: flex; gap: 26px; }
+.nav-links a { font-size: 13px; color: var(--muted); position: relative; padding: 6px 0; transition: color .25s; }
+.nav-links a::after { content: ''; position: absolute; left: 0; bottom: 0; height: 1px; width: 100%; background: var(--accent); transform: scaleX(0); transform-origin: left; transition: transform .35s cubic-bezier(.2, .8, .2, 1); }
+.nav-links a:hover, .nav-links a.active { color: var(--fg); }
+.nav-links a.active::after, .nav-links a:hover::after { transform: scaleX(1); }
+.nav-toggle { display: none; background: none; border: 0; font-size: 1.2rem; padding: 8px; }
+.progress { position: absolute; left: 0; bottom: -1px; width: 100%; height: 2px; }
+.progress i { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--accent-2)); }
 
-/* ---------- Mobile ---------- */
-@media (max-width: 768px) {
+@media (max-width: 860px) {
     .nav-toggle { display: block; }
-    .nav-links {
-        display: none; position: absolute; top: 56px; left: 0; right: 0;
-        flex-direction: column; gap: 0; background: rgba(0, 0, 0, .9);
-        border-bottom: 1px solid rgba(255, 255, 255, .08);
-    }
-    .nav-links.open { display: flex; }
-    .nav-links a { padding: 14px 20px; border-top: 1px solid #161b22; }
+    .nav-links { position: absolute; top: var(--nav-h); left: 0; right: 0; flex-direction: column; gap: 0; background: rgba(5, 5, 7, .96); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); padding: 8px 24px 16px; transform: translateY(-10px); opacity: 0; pointer-events: none; transition: .3s; }
+    .nav-links.open { transform: none; opacity: 1; pointer-events: auto; }
+    .nav-links a { padding: 12px 0; font-size: 15px; }
 }

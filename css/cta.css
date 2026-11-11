@@ -1,0 +1,9 @@
+/* ==========================================================
+   CHAMADA · disponibilidade para vagas
+   ========================================================== */
+.cta { padding: clamp(40px, 8vh, 90px) 0; }
+.cta-box { position: relative; overflow: hidden; padding: clamp(32px, 6vw, 64px); border: 1px solid var(--line-2); border-radius: calc(var(--radius) + 6px); background: radial-gradient(700px circle at 85% 0%, rgba(168, 85, 247, .22), transparent 60%), var(--panel); }
+.cta-box h2 { max-width: 760px; font-size: clamp(1.9rem, 4.6vw, 3.3rem); font-weight: 600; letter-spacing: -.035em; line-height: 1.08; }
+.cta-box h2 span { background: linear-gradient(100deg, var(--accent-2), var(--accent)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.cta-box p { color: var(--muted); margin: 14px 0 28px; max-width: 560px; }
+.cta-box .tag { margin-bottom: 20px; }

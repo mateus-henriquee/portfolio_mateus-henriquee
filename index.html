@@ -7,7 +7,23 @@
     <meta name="description" content="Portfólio de Mateus Henrique Leccese: Python, SQL, Power BI e Databricks. Estudante de Data Science na FIAP.">
     <meta property="og:title" content="Mateus Henrique | Analista de Dados">
     <meta property="og:description" content="Transformo dados em decisões. Python, SQL, Power BI e Big Data.">
-    <meta property="og:image" content="https://github.com/mateus-henriquee.png">
+    <meta property="og:image" content="https://portfolio-mateus-henriquee.vercel.app/img/og.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://portfolio-mateus-henriquee.vercel.app/">
+    <meta property="og:locale" content="pt_BR">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Mateus Henrique | Analista de Dados">
+    <meta name="twitter:image" content="https://portfolio-mateus-henriquee.vercel.app/img/og.jpg">
+    <link rel="canonical" href="https://portfolio-mateus-henriquee.vercel.app/">
+    <script type="application/ld+json">
+    {"@context": "https://schema.org", "@type": "Person", "name": "Mateus Henrique Leccese da Silva",
+      "jobTitle": "Estudante de Data Science", "url": "https://portfolio-mateus-henriquee.vercel.app/",
+      "alumniOf": {"@type": "CollegeOrUniversity", "name": "FIAP"},
+      "knowsAbout": ["Python", "SQL", "Power BI", "Pandas", "MongoDB", "Oracle Cloud", "Análise de Dados"],
+      "sameAs": ["https://github.com/mateus-henriquee", "https://www.linkedin.com/in/devmateus-henriquee"]}
+    </script>
     <meta name="theme-color" content="#050507">
     <link rel="icon" href="https://avatars.githubusercontent.com/u/99336388?v=4">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,6 +38,9 @@
     <link rel="stylesheet" href="css/projects.css">
     <link rel="stylesheet" href="css/cards.css">
     <link rel="stylesheet" href="css/case.css">
+    <link rel="stylesheet" href="css/pitch.css">
+    <link rel="stylesheet" href="css/achievements.css">
+    <link rel="stylesheet" href="css/cta.css">
     <link rel="stylesheet" href="css/experience.css">
     <link rel="stylesheet" href="css/lightbox.css">
     <link rel="stylesheet" href="css/education.css">
@@ -131,11 +150,34 @@
         </div>
     </section>
 
+    <!-- PITCH EM VÍDEO -->
+    <section id="pitch" class="section">
+        <div class="container">
+            <div class="head" data-r3d="flip"><span class="eyebrow">02 — Pitch</span><h2 class="title">Meu perfil em 50 segundos</h2></div>
+            <div class="pitch-grid">
+                <div class="pitch-frame" data-r3d="up">
+                    <video id="pitch-video" preload="none" playsinline poster="video/pitch-poster.jpg" aria-label="Vídeo de apresentação de Mateus Henrique">
+                        <source src="video/pitch.mp4" type="video/mp4">
+                    </video>
+                    <button type="button" class="pitch-play" id="pitch-play" aria-label="Assistir ao vídeo"><i class="fa-solid fa-play"></i><span>Assistir</span></button>
+                </div>
+                <ol class="pitch-chapters" id="pitch-chapters" data-r3d="right">
+                    <li><button type="button" data-t="0"><time>0:00</time>Abertura</button></li>
+                    <li><button type="button" data-t="11.5"><time>0:11</time>Quem sou</button></li>
+                    <li><button type="button" data-t="19"><time>0:19</time>Stack</button></li>
+                    <li><button type="button" data-t="26"><time>0:26</time>DataMind</button></li>
+                    <li><button type="button" data-t="35"><time>0:35</time>Conquistas</button></li>
+                    <li><button type="button" data-t="43"><time>0:43</time>Contato</button></li>
+                </ol>
+            </div>
+        </div>
+    </section>
+
     <!-- SKILLS: palco fixo, anel 3D gira com o scroll -->
     <section id="skills" class="skills-pin">
         <div class="pin-sticky">
             <div class="container">
-                <div class="head"><span class="eyebrow">02 — Skills</span><h2 class="title">Habilidades</h2></div>
+                <div class="head"><span class="eyebrow">03 — Skills</span><h2 class="title">Habilidades</h2></div>
             </div>
             <div class="ring-stage">
                 <div class="ring" id="skill-ring"></div>
@@ -151,7 +193,7 @@
     <!-- PROJETOS -->
     <section id="projetos" class="section band">
         <div class="container">
-            <div class="head" data-r3d="flip"><span class="eyebrow">03 — Projetos</span><h2 class="title">Projetos</h2></div>
+            <div class="head" data-r3d="flip"><span class="eyebrow">04 — Projetos</span><h2 class="title">Projetos</h2></div>
             <p class="lead-muted">Repositórios reais do meu GitHub. Filtre por linguagem, por assunto ou busque por nome.</p>
 
             <div class="toolbar">
@@ -170,10 +212,43 @@
         </div>
     </section>
 
+    <!-- CONQUISTAS -->
+    <section id="conquistas" class="section">
+        <div class="container">
+            <div class="head" data-r3d="flip"><span class="eyebrow">05 — Conquistas</span><h2 class="title">Resultados que já entreguei</h2></div>
+            <div class="ach-grid">
+                <article class="ach" data-r3d="up" data-delay="0"><div class="ach-in" data-tilt>
+                    <div class="ach-big">1º</div>
+                    <span class="ach-ev">Hackathon Estágio FIAP · 2026</span>
+                    <h3>Dashboard Inteligente de Chamados</h3>
+                    <p>Soluções e automações para o dia a dia operacional dos setores da FIAP. 1º lugar entre os estagiários.</p>
+                    <div class="ach-tags"><span>TypeScript</span><span>Tailwind</span><span>Power BI</span></div>
+                    <a class="ach-link" href="https://github.com/Fiap-Hackops/Projeto-Hackops-fiap-2026" target="_blank" rel="noopener">Ver repositório <i class="fa-solid fa-arrow-right"></i></a>
+                </div></article>
+                <article class="ach" data-r3d="up" data-delay="1"><div class="ach-in" data-tilt>
+                    <div class="ach-big">2º</div>
+                    <span class="ach-ev">Startups FIAP School · 2025</span>
+                    <h3>BlueMind</h3>
+                    <p>Startup de inteligência emocional para jovens de 14 a 20 anos, com gamificação e personalização. 2º lugar entre todas as salas.</p>
+                    <div class="ach-tags"><span>JavaScript</span><span>Tailwind</span><span>Power BI</span></div>
+                    <a class="ach-link" href="https://github.com/Guilherme-Rigobello/bluemind" target="_blank" rel="noopener">Ver repositório <i class="fa-solid fa-arrow-right"></i></a>
+                </div></article>
+                <article class="ach" data-r3d="up" data-delay="2"><div class="ach-in" data-tilt>
+                    <div class="ach-big">4,5 mi</div>
+                    <span class="ach-ev">Challenge FIAP × Oracle · 2026</span>
+                    <h3>DataMind</h3>
+                    <p>Pipeline ETL com 4,5 milhões de internações reais do SUS na Oracle Cloud. Consultas de minutos para milissegundos.</p>
+                    <div class="ach-tags"><span>Python</span><span>FastAPI</span><span>Oracle 23ai</span><span>OCI</span></div>
+                    <a class="ach-link" href="https://github.com/mateus-henriquee/ORACLExDATASUS_challenge-FIAP-2026" target="_blank" rel="noopener">Ver repositório <i class="fa-solid fa-arrow-right"></i></a>
+                </div></article>
+            </div>
+        </div>
+    </section>
+
     <!-- ESTUDO DE CASO -->
     <section id="estudo" class="section">
         <div class="container">
-            <div class="head" data-r3d="flip"><span class="eyebrow">04 — Estudo de caso</span><h2 class="title">Quanto eu construo por mês?</h2></div>
+            <div class="head" data-r3d="flip"><span class="eyebrow">06 — Estudo de caso</span><h2 class="title">Quanto eu construo por mês?</h2></div>
             <div class="case-grid">
                 <ol class="case-steps" data-r3d="left">
                     <li><span>Pergunta</span><p>Minha produção no GitHub é constante ou acontece em picos?</p></li>
@@ -223,7 +298,7 @@
     <!-- EXPERIÊNCIA -->
     <section id="experiencia" class="section">
         <div class="container">
-            <div class="head" data-r3d="flip"><span class="eyebrow">05 — Experiência</span><h2 class="title">Experiência profissional</h2></div>
+            <div class="head" data-r3d="flip"><span class="eyebrow">07 — Experiência</span><h2 class="title">Experiência profissional</h2></div>
 
             <div class="timeline" id="timeline">
                 <div class="t-line"><i id="t-fill"></i></div>
@@ -257,7 +332,7 @@
     <!-- FORMAÇÃO: cards empilham em 3D -->
     <section id="formacoes" class="section band">
         <div class="container">
-            <div class="head" data-r3d="flip"><span class="eyebrow">06 — Formação</span><h2 class="title">Formação</h2></div>
+            <div class="head" data-r3d="flip"><span class="eyebrow">08 — Formação</span><h2 class="title">Formação</h2></div>
 
             <div class="edu-stack" id="edu-stack">
                 <article class="edu-card">
@@ -292,7 +367,7 @@
     <!-- CURSOS -->
     <section id="cursos" class="section">
         <div class="container">
-            <div class="head" data-r3d="flip"><span class="eyebrow">07 — Cursos</span><h2 class="title">Cursos realizados</h2></div>
+            <div class="head" data-r3d="flip"><span class="eyebrow">09 — Cursos</span><h2 class="title">Cursos realizados</h2></div>
             <div id="alura-container" class="grid"></div>
             <div class="more-row">
                 <button type="button" id="cursos-load-more" class="btn" hidden>Ver mais cursos</button>
@@ -305,7 +380,7 @@
     <section id="curriculo" class="section band">
         <div class="container">
             <div class="head-row">
-                <div class="head" data-r3d="flip"><span class="eyebrow">08 — Currículo</span><h2 class="title">Currículo</h2></div>
+                <div class="head" data-r3d="flip"><span class="eyebrow">10 — Currículo</span><h2 class="title">Currículo</h2></div>
                 <div class="resume-actions">
                     <a id="resume-download" class="btn btn-primary" href="#" target="_blank" rel="noopener"><i class="fa-solid fa-download"></i> Baixar CV</a>
                     <a class="btn" href="https://www.linkedin.com/in/devmateus-henriquee" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin-in"></i> Conectar no LinkedIn</a>
@@ -319,10 +394,25 @@
         </div>
     </section>
 
+    <!-- CHAMADA -->
+    <section class="cta" aria-label="Disponibilidade">
+        <div class="container">
+            <div class="cta-box" data-r3d="up">
+                <span class="tag"><i class="dot"></i> Disponível agora</span>
+                <h2>Aberto a <span>estágio</span> e vagas <span>júnior</span> em dados.</h2>
+                <p>Análise de dados, BI e projetos com Python e SQL. São Paulo, SP.</p>
+                <div class="actions">
+                    <a href="#contato" class="btn btn-primary" data-magnetic><i class="fa-solid fa-envelope"></i> Falar comigo</a>
+                    <a href="#curriculo" class="btn" data-magnetic><i class="fa-solid fa-file-lines"></i> Ver currículo</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- CONTATO -->
     <section id="contato" class="section">
         <div class="container">
-            <div class="head" data-r3d="flip"><span class="eyebrow">09 — Contato</span><h2 class="title">Vamos conversar?</h2></div>
+            <div class="head" data-r3d="flip"><span class="eyebrow">11 — Contato</span><h2 class="title">Vamos conversar?</h2></div>
             <div class="contact-grid">
                 <div class="contact-info" data-r3d="left">
                     <p>Procuro uma oportunidade de estágio em Dados. Me chame por qualquer canal.</p>
@@ -414,6 +504,7 @@
     <script src="js/skills.js"></script>
     <script src="js/projects.js"></script>
     <script src="js/case.js"></script>
+    <script src="js/pitch.js"></script>
     <script src="js/experience.js"></script>
     <script src="js/courses.js"></script>
     <script src="js/contact.js"></script>

@@ -1,0 +1,21 @@
+/* ==========================================================
+   CONQUISTAS · prêmios e números do currículo
+   ========================================================== */
+.ach-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 18px; }
+.ach { min-width: 0; }
+.ach-in { position: relative; display: flex; flex-direction: column; height: 100%; padding: 28px 26px 24px; overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius); background: var(--panel); transition: border-color .3s, transform .25s ease-out; will-change: transform; }
+.ach-in::before { content: ''; position: absolute; inset: 0; pointer-events: none; background: radial-gradient(400px circle at var(--mx, 50%) var(--my, 0%), rgba(168, 85, 247, .14), transparent 60%); }
+.ach-in:hover { border-color: var(--accent); }
+.ach-big { font-size: clamp(3rem, 6vw, 4.6rem); font-weight: 700; letter-spacing: -.05em; line-height: 1; background: linear-gradient(180deg, #fff 10%, var(--accent-2) 95%); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 18px; }
+.ach-ev { font: 500 11.5px var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+.ach h3 { font-size: 1.15rem; font-weight: 600; letter-spacing: -.01em; margin: 8px 0 8px; }
+.ach p { color: var(--muted); font-size: 14px; line-height: 1.55; }
+.ach-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 18px; }
+.ach-tags span { padding: 3px 10px; border: 1px solid var(--line-2); border-radius: 999px; font: 11.5px var(--mono); color: #cfcfe0; }
+.ach-link { margin-top: auto; font-size: 13.5px; color: var(--accent-2); display: inline-flex; align-items: center; gap: 8px; }
+.ach-link i { transition: transform .2s; }
+.ach-link:hover i { transform: translateX(4px); }
+
+@media (max-width: 900px) {
+    .ach-grid { grid-template-columns: 1fr; }
+}

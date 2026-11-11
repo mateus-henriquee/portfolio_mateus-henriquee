@@ -1,5 +1,5 @@
 /* ==========================================================
-   ESTUDO DE CASO · gráfico minimalista de repositórios por mês
+   ESTUDO DE CASO · gráfico de linhas minimalista de repositórios por mês
    ========================================================== */
 .case-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.7fr); gap: clamp(28px, 5vw, 64px); align-items: start; }
 
@@ -10,19 +10,10 @@
 .case-steps p { color: #b9b9c4; font-size: 14.5px; line-height: 1.55; }
 .case-steps li:last-child p { color: var(--fg); }
 
-.glass-stage { position: relative; min-width: 0; isolation: isolate; }
-/* manchas de luz atrás do vidro: é o que o desfoque do card "borra" */
-.glass-stage::before, .glass-stage::after { content: ''; position: absolute; z-index: -1; border-radius: 50%; pointer-events: none; }
-.glass-stage::before { width: 62%; aspect-ratio: 1; top: -14%; right: -9%; background: radial-gradient(circle, rgba(168, 85, 247, .42), transparent 68%); }
-.glass-stage::after { width: 52%; aspect-ratio: 1; bottom: -16%; left: -8%; background: radial-gradient(circle, rgba(124, 58, 237, .34), transparent 68%); }
+.chart-col { min-width: 0; }
 
-.chart-card { --bad: #f85149; position: relative; min-width: 0; padding: 24px; border-radius: var(--radius); border: 1px solid rgba(255, 255, 255, .15);
-    background: linear-gradient(140deg, rgba(255, 255, 255, .10), rgba(255, 255, 255, .03) 42%, rgba(168, 85, 247, .08));
-    -webkit-backdrop-filter: blur(24px) saturate(1.6); backdrop-filter: blur(24px) saturate(1.6);
-    box-shadow: 0 24px 60px -24px rgba(0, 0, 0, .8), inset 0 1px 0 rgba(255, 255, 255, .2), inset 0 -1px 0 rgba(255, 255, 255, .04); }
-/* brilho diagonal do vidro */
-.chart-card::before { content: ''; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; background: linear-gradient(118deg, rgba(255, 255, 255, .13) 0%, rgba(255, 255, 255, 0) 32%); }
-.chart-card > * { position: relative; }
+/* card liso: fundo sólido e borda fina, sem vidro */
+.chart-card { --bad: #f85149; position: relative; min-width: 0; padding: 24px; border-radius: var(--radius); border: 1px solid var(--line-2); background: var(--panel); }
 .chart-head { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 14px; margin-bottom: 18px; }
 .chart-head h3 { font-size: 1rem; font-weight: 600; letter-spacing: -.01em; }
 .chart-head small { color: var(--muted); font: 11.5px var(--mono); }
@@ -64,7 +55,7 @@
 .chart-svg .hit { fill: transparent; outline: none; }
 .chart-svg .hit:focus-visible { stroke: var(--accent); stroke-width: 1; }
 
-.chart-tip { position: absolute; z-index: 3; min-width: 170px; max-width: 240px; padding: 10px 12px; pointer-events: none; border: 1px solid rgba(255, 255, 255, .18); border-radius: 12px; background: rgba(14, 10, 24, .72); -webkit-backdrop-filter: blur(16px); backdrop-filter: blur(16px); box-shadow: 0 10px 30px -8px rgba(0, 0, 0, .7), inset 0 1px 0 rgba(255, 255, 255, .12); font-size: 12.5px; transform: translate(-50%, calc(-100% - 10px)); }
+.chart-tip { position: absolute; z-index: 3; min-width: 170px; max-width: 240px; padding: 10px 12px; pointer-events: none; border: 1px solid var(--line-2); border-radius: 10px; background: #0d0d12; font-size: 12.5px; transform: translate(-50%, calc(-100% - 10px)); }
 .chart-tip.below { transform: translate(-50%, 6px); }
 .chart-tip[hidden] { display: none; }
 .chart-tip b { display: block; white-space: nowrap; font-size: 13px; font-weight: 600; }
@@ -82,7 +73,7 @@
 .chart-legend .down::before { background: #f85149; box-shadow: 0 0 8px rgba(248, 81, 73, .7); }
 .chart-legend .avg::before { width: 14px; height: 0; border-radius: 0; border-top: 1px dashed var(--accent-2); }
 
-.case-stats { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 18px; border-top: 1px solid rgba(255, 255, 255, .1); }
+.case-stats { display: grid; grid-template-columns: repeat(4, 1fr); margin-top: 18px; border-top: 1px solid var(--line); }
 .case-stats div { padding: 16px 0 0; }
 .case-stats strong.good { color: var(--good); }
 .case-stats div + div { padding-left: 18px; border-left: 1px solid var(--line); }

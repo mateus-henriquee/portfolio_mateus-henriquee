@@ -45,13 +45,22 @@
 .chart-svg .val { text-anchor: middle; fill: var(--fg); font-weight: 500; opacity: 0; transition: opacity .5s .8s; }
 .chart.in .val { opacity: 1; }
 
-.chart-svg .bar { stroke: rgba(255, 255, 255, .3); stroke-width: 1; transform-box: fill-box; transform-origin: 50% 100%; transform: scaleY(0); transition: transform .9s cubic-bezier(.2, .8, .2, 1) calc(var(--i) * 30ms), filter .25s, stroke .25s; }
-.chart.in .bar { transform: scaleY(1); }
-.chart.still .bar, .chart.still .val { transition: filter .25s, stroke .25s; }
-.chart-svg .bar.up { fill: url(#gUp); filter: drop-shadow(0 0 9px rgba(63, 185, 80, .38)); }
-.chart-svg .bar.down { fill: url(#gDown); filter: drop-shadow(0 0 9px rgba(248, 81, 73, .34)); }
-.chart-svg .bar.mid { fill: url(#gMid); filter: drop-shadow(0 0 9px rgba(168, 85, 247, .4)); }
-.chart-svg .bar.on { stroke: rgba(255, 255, 255, .75); filter: brightness(1.3) drop-shadow(0 0 12px rgba(255, 255, 255, .25)); }
+/* linha + área + pontos */
+.chart-svg .area { fill: url(#gArea); }
+.chart-svg .reveal { transform-box: fill-box; transform-origin: 0 50%; transform: scaleX(0); transition: transform 1.5s cubic-bezier(.3, .7, .2, 1) .15s; }
+.chart.in .reveal { transform: scaleX(1); }
+.chart-svg .line { fill: none; stroke: var(--accent-2); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; filter: drop-shadow(0 0 7px rgba(168, 85, 247, .75)); transition: stroke-dashoffset 1.5s cubic-bezier(.3, .7, .2, 1) .1s; }
+.chart.in .line { stroke-dashoffset: 0; }
+.chart-svg .guide { stroke: rgba(255, 255, 255, .28); stroke-dasharray: 3 4; opacity: 0; transition: opacity .15s; }
+.chart-svg .guide.on { opacity: 1; }
+.chart-svg .pt { stroke: rgba(255, 255, 255, .9); stroke-width: 1.5; transform-box: fill-box; transform-origin: center; transform: scale(0); transition: transform .5s cubic-bezier(.3, 1.6, .5, 1) calc(.55s + var(--i) * 45ms); }
+.chart.in .pt { transform: scale(1); }
+.chart-svg .pt.up { fill: var(--good); filter: drop-shadow(0 0 6px rgba(63, 185, 80, .85)); }
+.chart-svg .pt.down { fill: #f85149; filter: drop-shadow(0 0 6px rgba(248, 81, 73, .85)); }
+.chart-svg .pt.mid { fill: var(--accent); filter: drop-shadow(0 0 6px rgba(168, 85, 247, .85)); }
+.chart.in .pt.on { transform: scale(1.6); transition-delay: 0s; }
+.chart.still .reveal, .chart.still .line { transition: none; }
+.chart.still .pt { transition: transform .2s; }
 .chart-svg .hit { fill: transparent; outline: none; }
 .chart-svg .hit:focus-visible { stroke: var(--accent); stroke-width: 1; }
 
@@ -90,6 +99,7 @@
     .case-stats div:nth-child(n+3) { margin-top: 16px; }
 }
 @media (prefers-reduced-motion: reduce) {
-    .chart-svg .bar { transform: none; transition: none; }
-    .chart-svg .val { opacity: 1; transition: none; }
+        .chart-svg .val { opacity: 1; transition: none; }
+    .chart-svg .reveal, .chart-svg .pt { transform: none; transition: none; }
+    .chart-svg .line { stroke-dashoffset: 0; transition: none; }
 }

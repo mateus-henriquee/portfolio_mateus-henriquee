@@ -89,6 +89,28 @@
     }
 
     // ---------- desenho ----------
+    // curva suave que nunca passa dos valores vizinhos (não "afunda" abaixo de 0)
+    function smoothPath(pts) {
+        const n = pts.length;
+        if (n === 1) return `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+        const dx = [], mk = [];
+        for (let i = 0; i < n - 1; i++) { dx[i] = pts[i + 1][0] - pts[i][0]; mk[i] = (pts[i + 1][1] - pts[i][1]) / dx[i]; }
+        const t = [mk[0]];
+        for (let i = 1; i < n - 1; i++) t[i] = mk[i - 1] * mk[i] <= 0 ? 0 : (mk[i - 1] + mk[i]) / 2;
+        t[n - 1] = mk[n - 2];
+        for (let i = 0; i < n - 1; i++) {
+            if (mk[i] === 0) { t[i] = 0; t[i + 1] = 0; continue; }
+            const a = t[i] / mk[i], b = t[i + 1] / mk[i], h = Math.hypot(a, b);
+            if (h > 3) { const k = 3 / h; t[i] = k * a * mk[i]; t[i + 1] = k * b * mk[i]; }
+        }
+        let d = `M${pts[0][0].toFixed(1)},${pts[0][1].toFixed(1)}`;
+        for (let i = 0; i < n - 1; i++) {
+            const c = dx[i] / 3;
+            d += ` C${(pts[i][0] + c).toFixed(1)},${(pts[i][1] + t[i] * c).toFixed(1)} ${(pts[i + 1][0] - c).toFixed(1)},${(pts[i + 1][1] - t[i + 1] * c).toFixed(1)} ${pts[i + 1][0].toFixed(1)},${pts[i + 1][1].toFixed(1)}`;
+        }
+        return d;
+    }
+
     function draw(v, animate) {
         const W = Math.max(280, Math.round(chartEl.clientWidth));
         const H = Math.round(Math.min(320, Math.max(220, W * 0.42)));
@@ -96,18 +118,17 @@
         const iw = W - m.l - m.r, ih = H - m.t - m.b;
         const n = v.months.length;
         const slot = iw / n;
-        const barW = Math.max(3, Math.min(30, slot * 0.58));
         const max = Math.max(1, ...v.counts);
         const step = Math.max(1, Math.ceil(max / 4));
         const yMax = step * Math.ceil(max / step);
         const every = [1, 2, 3, 6, 12].find(k => slot * k >= 34) || 12;
         const peaks = v.counts.filter(c => c === max && c > 0).length;
-        layout = { W, m, slot, barW, ih, yMax };
+        layout = { W, m, slot, ih, yMax };
 
         const yAvg = m.t + ih - (v.avg / yMax) * ih;
-        const grad = (id, rgb) => `<linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(${rgb})" stop-opacity=".9"/><stop offset="1" stop-color="rgb(${rgb})" stop-opacity=".2"/></linearGradient>`;
-        let s = `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="group" aria-label="Gráfico de barras: repositórios criados por mês">`;
-        s += `<defs>${grad('gUp', '63,185,80')}${grad('gDown', '248,81,73')}${grad('gMid', '168,85,247')}</defs>`;
+        let s = `<svg class="chart-svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="group" aria-label="Gráfico de linhas: repositórios criados por mês">`;
+        s += `<defs><linearGradient id="gArea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgb(168,85,247)" stop-opacity=".5"/><stop offset=".6" stop-color="rgb(168,85,247)" stop-opacity=".14"/><stop offset="1" stop-color="rgb(168,85,247)" stop-opacity="0"/></linearGradient>` +
+            `<clipPath id="cpReveal"><rect class="reveal" x="0" y="-10" width="${W}" height="${H + 20}"/></clipPath></defs>`;
         for (let t = 0; t <= yMax; t += step) {
             const y = m.t + ih - (t / yMax) * ih;
             s += `<line class="${t ? 'grid-l' : 'base-l'}" x1="${m.l}" x2="${W - m.r}" y1="${y}" y2="${y}"/>`;
@@ -116,16 +137,22 @@
         if (v.avg > 0) {
             s += `<line class="avg-l" x1="${m.l}" x2="${W - m.r}" y1="${yAvg.toFixed(1)}" y2="${yAvg.toFixed(1)}"/>`;
         }
+        const base = m.t + ih;
+        const px = (i) => m.l + i * slot + slot / 2;
+        const py = (c) => base - (c / yMax) * ih;
+        const pts = v.counts.map((c, i) => [px(i), py(c)]);
+        const line = smoothPath(pts);
+        s += `<path class="area" clip-path="url(#cpReveal)" d="${line} L${pts[n - 1][0].toFixed(1)},${base} L${pts[0][0].toFixed(1)},${base} Z"/>`;
+        s += `<path class="line" pathLength="1" d="${line}"/>`;
+        s += `<line class="guide" x1="0" x2="0" y1="${m.t}" y2="${base}"/>`;
+        const r = slot < 16 ? 3 : 4.5;
         let firstLabel = true;
         v.months.forEach((k, i) => {
             const c = v.counts[i];
             const mon = Number(k.slice(5)) - 1;
-            const cx = m.l + i * slot + slot / 2;
-            const h = c ? Math.max(4, (c / yMax) * ih) : 2;
-            const y = m.t + ih - h;
-            const cls = 'bar ' + kind(c, v.avg);
-            s += `<rect class="${cls}" data-i="${i}" style="--i:${i}" x="${(cx - barW / 2).toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${h.toFixed(1)}" rx="${Math.min(3, barW / 2).toFixed(1)}"/>`;
-            if (c === max && c > 0 && (slot >= 14 || peaks === 1)) s += `<text class="val" x="${cx.toFixed(1)}" y="${(y - 6).toFixed(1)}">${c}</text>`;
+            const [cx, cy] = pts[i];
+            s += `<circle class="pt ${kind(c, v.avg)}" data-i="${i}" style="--i:${i}" cx="${cx.toFixed(1)}" cy="${cy.toFixed(1)}" r="${r}"/>`;
+            if (c === max && c > 0 && (slot >= 14 || peaks === 1)) s += `<text class="val" x="${cx.toFixed(1)}" y="${(cy - 13).toFixed(1)}">${c}</text>`;
             if (mon % every === 0) {
                 s += `<text class="xl" x="${cx.toFixed(1)}" y="${H - m.b + 17}">${MON[mon]}</text>`;
                 if (mon === 0 || firstLabel) s += `<text class="yr" x="${cx.toFixed(1)}" y="${H - m.b + 31}">${k.slice(0, 4)}</text>`;
@@ -151,9 +178,9 @@
         const k = view.months[i];
         const c = view.counts[i];
         const { m, slot, ih, yMax, W } = layout;
-        const h = c ? Math.max(4, (c / yMax) * ih) : 2;
-        const yTop = m.t + ih - h;
-        const x = Math.min(Math.max(m.l + i * slot + slot / 2, 75), W - 75);
+        const cxp = m.l + i * slot + slot / 2;
+        const yTop = m.t + ih - (c / yMax) * ih - 8;      // logo acima do ponto
+        const x = Math.min(Math.max(cxp, 85), W - 85);
 
         tipEl.textContent = '';
         const b = document.createElement('b'); b.textContent = full(k);
@@ -174,14 +201,14 @@
         tipEl.style.left = x + 'px';
         tipEl.style.top = yTop + 'px';
         tipEl.hidden = false;
-        chartEl.querySelectorAll('.bar.on').forEach(el => el.classList.remove('on'));
-        const bar = chartEl.querySelector(`.bar[data-i="${i}"]`);
-        if (bar) bar.classList.add('on');
+        clearOn();
+        const pt = chartEl.querySelector(`.pt[data-i="${i}"]`);
+        if (pt) pt.classList.add('on');
+        const g = chartEl.querySelector('.guide');
+        if (g) { g.setAttribute('x1', cxp); g.setAttribute('x2', cxp); g.classList.add('on'); }
     }
-    function hideTip() {
-        tipEl.hidden = true;
-        chartEl.querySelectorAll('.bar.on').forEach(el => el.classList.remove('on'));
-    }
+    function clearOn() { chartEl.querySelectorAll('.on').forEach(el => el.classList.remove('on')); }
+    function hideTip() { tipEl.hidden = true; clearOn(); }
     chartEl.addEventListener('pointerover', (e) => { const h = e.target.closest('.hit'); if (h) showTip(Number(h.dataset.i)); });
     chartEl.addEventListener('pointerleave', hideTip);
     chartEl.addEventListener('focusin', (e) => { const h = e.target.closest('.hit'); if (h) showTip(Number(h.dataset.i)); });

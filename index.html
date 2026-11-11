@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="css/skills.css">
     <link rel="stylesheet" href="css/projects.css">
     <link rel="stylesheet" href="css/cards.css">
+    <link rel="stylesheet" href="css/case.css">
     <link rel="stylesheet" href="css/experience.css">
     <link rel="stylesheet" href="css/lightbox.css">
     <link rel="stylesheet" href="css/education.css">
@@ -46,6 +47,7 @@
                 <a href="#sobre">Sobre</a>
                 <a href="#skills">Skills</a>
                 <a href="#projetos">Projetos</a>
+                <a href="#estudo">Estudo</a>
                 <a href="#experiencia">Experiência</a>
                 <a href="#formacoes">Formação</a>
                 <a href="#cursos">Cursos</a>
@@ -83,7 +85,6 @@
                     <span class="orbit-chip"><i class="fa-solid fa-database"></i> SQL / NoSQL</span>
                     <span class="orbit-chip"><i class="fa-solid fa-chart-column"></i> Power BI</span>
                     <span class="orbit-chip"><i class="fa-solid fa-layer-group"></i> Databricks</span>
-                    <span class="orbit-chip"><i class="fa-solid fa-layer-group"></i>Análise de dados</span>
                 </div>
                 <div class="photo-frame" id="photo-frame">
                     <img src="https://github.com/mateus-henriquee.png" alt="Foto de Mateus Henrique">
@@ -169,10 +170,60 @@
         </div>
     </section>
 
+    <!-- ESTUDO DE CASO -->
+    <section id="estudo" class="section">
+        <div class="container">
+            <div class="head" data-r3d="flip"><span class="eyebrow">04 — Estudo de caso</span><h2 class="title">Quanto eu construo por mês?</h2></div>
+            <div class="case-grid">
+                <ol class="case-steps" data-r3d="left">
+                    <li><span>Pergunta</span><p>Minha produção no GitHub é constante ou acontece em picos?</p></li>
+                    <li><span>Dados</span><p>API pública do GitHub: a data de criação de cada repositório meu.</p></li>
+                    <li><span>Método</span><p>Contei os repositórios criados em cada mês, do primeiro até hoje.</p></li>
+                    <li><span>Leitura</span><p id="case-reading">Carregando dados...</p></li>
+                </ol>
+                <div class="glass-stage" data-r3d="right">
+                <div class="chart-card">
+                    <div class="chart-head">
+                        <div>
+                            <h3>Repositórios criados por mês</h3>
+                            <small id="case-sub">GitHub · carregando</small>
+                        </div>
+                        <div class="chart-ctrl">
+                            <div class="chips" id="case-forks" role="group" aria-label="Tipo de repositório">
+                                <button type="button" class="chip active" data-forks="0" aria-pressed="true">Autorais</button>
+                                <button type="button" class="chip" data-forks="1" aria-pressed="false">+ forks</button>
+                            </div>
+                            <div class="chips" id="case-range" role="group" aria-label="Período" hidden>
+                                <button type="button" class="chip active" data-range="12" aria-pressed="true">12 meses</button>
+                                <button type="button" class="chip" data-range="all" aria-pressed="false">Tudo</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-wrap">
+                        <div class="chart" id="case-chart"><p class="loading">Lendo o GitHub...</p></div>
+                        <div class="chart-tip" id="case-tip" hidden></div>
+                    </div>
+                    <div class="chart-legend" aria-hidden="true">
+                        <span class="lg up">acima da média</span>
+                        <span class="lg down">abaixo da média</span>
+                        <span class="lg avg" id="lg-avg">média do período</span>
+                    </div>
+                    <div class="case-stats">
+                        <div><strong id="cs-total">–</strong><span>repositórios no período</span></div>
+                        <div><strong id="cs-peak" class="good">–</strong><span id="cs-peak-note">mês mais produtivo</span></div>
+                        <div><strong id="cs-avg">–</strong><span>média por mês</span></div>
+                        <div><strong id="cs-active">–</strong><span id="cs-active-note">meses com projeto novo</span></div>
+                    </div>
+                </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <!-- EXPERIÊNCIA -->
     <section id="experiencia" class="section">
         <div class="container">
-            <div class="head" data-r3d="flip"><span class="eyebrow">04 — Experiência</span><h2 class="title">Experiência profissional</h2></div>
+            <div class="head" data-r3d="flip"><span class="eyebrow">05 — Experiência</span><h2 class="title">Experiência profissional</h2></div>
 
             <div class="timeline" id="timeline">
                 <div class="t-line"><i id="t-fill"></i></div>
@@ -206,7 +257,7 @@
     <!-- FORMAÇÃO: cards empilham em 3D -->
     <section id="formacoes" class="section band">
         <div class="container">
-            <div class="head" data-r3d="flip"><span class="eyebrow">05 — Formação</span><h2 class="title">Formação</h2></div>
+            <div class="head" data-r3d="flip"><span class="eyebrow">06 — Formação</span><h2 class="title">Formação</h2></div>
 
             <div class="edu-stack" id="edu-stack">
                 <article class="edu-card">
@@ -241,7 +292,7 @@
     <!-- CURSOS -->
     <section id="cursos" class="section">
         <div class="container">
-            <div class="head" data-r3d="flip"><span class="eyebrow">06 — Cursos</span><h2 class="title">Cursos realizados</h2></div>
+            <div class="head" data-r3d="flip"><span class="eyebrow">07 — Cursos</span><h2 class="title">Cursos realizados</h2></div>
             <div id="alura-container" class="grid"></div>
             <div class="more-row">
                 <button type="button" id="cursos-load-more" class="btn" hidden>Ver mais cursos</button>
@@ -254,7 +305,7 @@
     <section id="curriculo" class="section band">
         <div class="container">
             <div class="head-row">
-                <div class="head" data-r3d="flip"><span class="eyebrow">07 — Currículo</span><h2 class="title">Currículo</h2></div>
+                <div class="head" data-r3d="flip"><span class="eyebrow">08 — Currículo</span><h2 class="title">Currículo</h2></div>
                 <div class="resume-actions">
                     <a id="resume-download" class="btn btn-primary" href="#" target="_blank" rel="noopener"><i class="fa-solid fa-download"></i> Baixar CV</a>
                     <a class="btn" href="https://www.linkedin.com/in/devmateus-henriquee" target="_blank" rel="noopener"><i class="fa-brands fa-linkedin-in"></i> Conectar no LinkedIn</a>
@@ -271,7 +322,7 @@
     <!-- CONTATO -->
     <section id="contato" class="section">
         <div class="container">
-            <div class="head" data-r3d="flip"><span class="eyebrow">08 — Contato</span><h2 class="title">Vamos conversar?</h2></div>
+            <div class="head" data-r3d="flip"><span class="eyebrow">09 — Contato</span><h2 class="title">Vamos conversar?</h2></div>
             <div class="contact-grid">
                 <div class="contact-info" data-r3d="left">
                     <p>Procuro uma oportunidade de estágio em Dados. Me chame por qualquer canal.</p>
@@ -362,6 +413,7 @@
     <script src="js/motion.js"></script>
     <script src="js/skills.js"></script>
     <script src="js/projects.js"></script>
+    <script src="js/case.js"></script>
     <script src="js/experience.js"></script>
     <script src="js/courses.js"></script>
     <script src="js/contact.js"></script>

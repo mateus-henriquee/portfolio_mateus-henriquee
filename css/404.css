@@ -1,0 +1,32 @@
+/* ==========================================================
+   404 · página não encontrada (usa as variáveis do root.css)
+   ========================================================== */
+body.nf { min-height: 100svh; display: flex; flex-direction: column; }
+.nf-top { padding: 22px 0; }
+.nf-top .brand { display: inline-block; font: 600 1.25rem var(--mono); letter-spacing: -.04em; }
+.nf-top .brand span { color: var(--accent); }
+.nf-main { flex: 1; display: grid; place-items: center; padding: 10px 0 70px; text-align: center; }
+
+.nf-kicker { font: 500 12px var(--mono); letter-spacing: .2em; text-transform: uppercase; color: var(--accent); }
+
+.nf-num { perspective: 1000px; margin: 8px 0 4px; font-size: clamp(6.5rem, 27vw, 15rem); font-weight: 700; letter-spacing: -.06em; line-height: 1; }
+.nf-stage { display: inline-flex; gap: .02em; transform-style: preserve-3d; will-change: transform; }
+.nf-d { position: relative; display: inline-block; transform-style: preserve-3d; }
+.nf-d .front { position: relative; display: block; background: linear-gradient(180deg, #fff 10%, var(--accent-2) 90%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.nf-d .layer { position: absolute; inset: 0; display: block; color: transparent; -webkit-text-stroke: 1px rgba(168, 85, 247, var(--a)); transform: translateZ(calc(var(--k) * -7px)); }
+
+.nf-title { font-size: clamp(1.5rem, 3.4vw, 2.3rem); font-weight: 600; letter-spacing: -.03em; line-height: 1.15; margin-bottom: 10px; }
+.nf-text { color: var(--muted); max-width: 440px; margin: 0 auto 26px; }
+
+.nf-term { display: inline-block; max-width: min(100%, 520px); margin-bottom: 30px; padding: 16px 20px; text-align: left; border: 1px solid var(--line-2); border-radius: var(--radius); background: var(--panel); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); font: 13px/1.7 var(--mono); color: #c9c9d3; overflow-wrap: anywhere; }
+.nf-term .k { color: var(--accent-2); }
+.nf-term .c { color: var(--muted); }
+.nf-term .u { color: var(--good); }
+.caret { display: inline-block; width: 7px; height: 14px; margin-left: 4px; vertical-align: -2px; background: var(--accent); animation: blink 1.1s steps(2, start) infinite; }
+@keyframes blink { to { visibility: hidden; } }
+
+.nf-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
+
+@media (prefers-reduced-motion: reduce) {
+    .caret { animation: none; }
+}
